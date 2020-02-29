@@ -1,0 +1,28 @@
+body {
+    line-height: 1.5;
+}
+
+.btn {
+    background: #fefefe;
+    border: 1px;
+    box-shadow: 0px 0px 3px;
+}
+
+.pdfobject-container {
+    width: 80%;
+    overflow: hidden;
+    margin: auto;
+}
+
+.post-block {
+    padding-left: 15%;
+    padding-right: 15%;
+}
+
+.posts-expand {
+    opacity: 0.90;
+}
+
+.posts-expand article {
+    border-radius: 10px!important;
+}
