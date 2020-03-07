@@ -158,6 +158,77 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://panderan.github.io/2017/04/11/Ubuntu%E4%B8%AD%E6%90%9C%E7%8B%97%E8%BE%93%E5%85%A5%E6%B3%95%E5%9C%A8WPS%E4%B8%AD%E6%97%A0%E6%B3%95%E9%94%AE%E5%85%A5%E4%B8%AD%E6%96%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/images/avatar.jpg">
+      <meta itemprop="name" content="Deran Pan">
+      <meta itemprop="description" content="独坐幽篁里，弹琴复长啸。</br>林深人不知，明月来相照。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Deran Pan's Pages">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/04/11/Ubuntu%E4%B8%AD%E6%90%9C%E7%8B%97%E8%BE%93%E5%85%A5%E6%B3%95%E5%9C%A8WPS%E4%B8%AD%E6%97%A0%E6%B3%95%E9%94%AE%E5%85%A5%E4%B8%AD%E6%96%87/" class="post-title-link" itemprop="url">Ubuntu 中搜狗输入法在 WPS 中无法键入中文</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-04-11 15:53:17" itemprop="dateCreated datePublished" datetime="2017-04-11T15:53:17+08:00">2017-04-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96/" itemprop="url" rel="index">
+                    <span itemprop="name">系统优化</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>之前使用的 Ubuntu 16.04 一直使用的Unity桌面环境。这次决定换成 Gnome 桌面换件，安装一切顺利。但是完成之后发现 WPS和 LibreOffice 无法使用中文输入。重装WPS和搜狗输入法都不行。认真百度之后搜索到如下解决办法。</p>
+<h2 id="LibreOffice"><a href="#LibreOffice" class="headerlink" title="LibreOffice"></a>LibreOffice</h2><p>安装libreoffice-gtk3、libreoffice-gnome软件包。</p>
+<h2 id="WPS"><a href="#WPS" class="headerlink" title="WPS"></a>WPS</h2><p>在/usr/bin/wps文件开头中增加如下两行，如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1 #!/bin/bash                                                                     </span><br><span class="line">2 export XMODIFIERS="@im=fcitx"     #新增加行                                              </span><br><span class="line">3 export QT_IM_MODULE="fcitx"       #新增加行                                        </span><br><span class="line">4 gOpt=                                                                           </span><br><span class="line">5 #gOptExt=-multiply                                                              </span><br><span class="line">6 gTemplateExt=("wpt" "dot" "dotx")                                               </span><br><span class="line">7 gBinPath=$(dirname "$0")                                                        </span><br><span class="line">8 if [ -d "$&#123;gBinPath&#125;/office6" ]; then</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://panderan.github.io/2017/02/14/Ubuntu%E4%B8%ADMysql%E4%B8%AD%E6%96%87%E5%AD%98%E5%82%A8%E4%B9%B1%E7%A0%81%E8%AE%BE%E7%BD%AE%E9%97%AE%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -530,14 +601,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">24</span>
+          <span class="site-state-item-count">25</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>

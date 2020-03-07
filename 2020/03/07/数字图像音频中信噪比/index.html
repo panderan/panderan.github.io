@@ -20,30 +20,22 @@
     var CONFIG = {"hostname":"panderan.github.io","root":"/","scheme":"Gemini","version":"7.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="本文首先对人眼的颜色感知方式进行了简要的说明，叙述了人眼感知颜色的方式。接着对 RGB 色彩显示的方法进行了说明，类似于人眼的三种视锥细胞，RGB色彩通过使用三种基本色混合来产生其他颜色。最终引出 CIE XYZ 颜色坐标空间，，并进行了简要介绍。该空间提供了其他颜色空间相互转换的能力，以及可以对不同颜色空间进行对比。">
+  <meta name="description" content="文本首先简单介绍了脉冲编码调制的方法，并由其中的量化误差引出了信噪比概念。接着对信号-量化噪声比进行了介绍以及如何用分贝单位对噪声比进行计算表示。最后对如何用分贝表示声音进行了说明，并介绍了分贝声压级以及满量程分贝级两种表示方法。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="颜色在计算机中的表示方法">
-<meta property="og:url" content="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/index.html">
+<meta property="og:title" content="脉冲编码调制、数字图像&#x2F;音频信噪比、分贝">
+<meta property="og:url" content="https://panderan.github.io/2020/03/07/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E9%9F%B3%E9%A2%91%E4%B8%AD%E4%BF%A1%E5%99%AA%E6%AF%94/index.html">
 <meta property="og:site_name" content="Deran Pan&#39;s Pages">
-<meta property="og:description" content="本文首先对人眼的颜色感知方式进行了简要的说明，叙述了人眼感知颜色的方式。接着对 RGB 色彩显示的方法进行了说明，类似于人眼的三种视锥细胞，RGB色彩通过使用三种基本色混合来产生其他颜色。最终引出 CIE XYZ 颜色坐标空间，，并进行了简要介绍。该空间提供了其他颜色空间相互转换的能力，以及可以对不同颜色空间进行对比。">
+<meta property="og:description" content="文本首先简单介绍了脉冲编码调制的方法，并由其中的量化误差引出了信噪比概念。接着对信号-量化噪声比进行了介绍以及如何用分贝单位对噪声比进行计算表示。最后对如何用分贝表示声音进行了说明，并介绍了分贝声压级以及满量程分贝级两种表示方法。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig1.jpg">
-<meta property="og:image" content="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig2.jpg">
-<meta property="og:image" content="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig3.jpg">
-<meta property="og:image" content="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig4.jpg">
-<meta property="og:image" content="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig5.jpg">
-<meta property="og:image" content="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig6.gif">
-<meta property="og:image" content="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig7.jpg">
-<meta property="og:image" content="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig8.png">
-<meta property="og:image" content="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig9.jpg">
-<meta property="og:image" content="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig10.jpg">
-<meta property="article:published_time" content="2020-02-13T11:13:26.000Z">
-<meta property="article:modified_time" content="2020-03-07T15:47:14.508Z">
+<meta property="og:image" content="https://panderan.github.io/2020/03/07/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E9%9F%B3%E9%A2%91%E4%B8%AD%E4%BF%A1%E5%99%AA%E6%AF%94/Fig.1.png">
+<meta property="og:image" content="https://panderan.github.io/2020/03/07/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E9%9F%B3%E9%A2%91%E4%B8%AD%E4%BF%A1%E5%99%AA%E6%AF%94/Fig.2.png">
+<meta property="article:published_time" content="2020-03-07T13:44:55.000Z">
+<meta property="article:modified_time" content="2020-03-07T15:54:42.864Z">
 <meta property="article:author" content="Deran Pan">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig1.jpg">
+<meta name="twitter:image" content="https://panderan.github.io/2020/03/07/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E9%9F%B3%E9%A2%91%E4%B8%AD%E4%BF%A1%E5%99%AA%E6%AF%94/Fig.1.png">
 
-<link rel="canonical" href="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/">
+<link rel="canonical" href="https://panderan.github.io/2020/03/07/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E9%9F%B3%E9%A2%91%E4%B8%AD%E4%BF%A1%E5%99%AA%E6%AF%94/">
 
 
 <script id="page-configurations">
@@ -55,7 +47,7 @@
   };
 </script>
 
-  <title>颜色在计算机中的表示方法 | Deran Pan's Pages</title>
+  <title>脉冲编码调制、数字图像/音频信噪比、分贝 | Deran Pan's Pages</title>
   
 
 
@@ -171,7 +163,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://panderan.github.io/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/">
+    <link itemprop="mainEntityOfPage" href="https://panderan.github.io/2020/03/07/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E9%9F%B3%E9%A2%91%E4%B8%AD%E4%BF%A1%E5%99%AA%E6%AF%94/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/uploads/images/avatar.jpg">
@@ -184,7 +176,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          颜色在计算机中的表示方法
+          脉冲编码调制、数字图像/音频信噪比、分贝
         </h1>
 
         <div class="post-meta">
@@ -194,7 +186,7 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-02-13 19:13:26" itemprop="dateCreated datePublished" datetime="2020-02-13T19:13:26+08:00">2020-02-13</time>
+              <time title="创建时间：2020-03-07 21:44:55" itemprop="dateCreated datePublished" datetime="2020-03-07T21:44:55+08:00">2020-03-07</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -219,44 +211,78 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文首先对人眼的颜色感知方式进行了简要的说明，叙述了人眼感知颜色的方式。接着对 RGB 色彩显示的方法进行了说明，类似于人眼的三种视锥细胞，RGB色彩通过使用三种基本色混合来产生其他颜色。最终引出 CIE XYZ 颜色坐标空间，，并进行了简要介绍。该空间提供了其他颜色空间相互转换的能力，以及可以对不同颜色空间进行对比。</p>
+        <p>文本首先简单介绍了脉冲编码调制的方法，并由其中的量化误差引出了信噪比概念。接着对信号-量化噪声比进行了介绍以及如何用分贝单位对噪声比进行计算表示。最后对如何用分贝表示声音进行了说明，并介绍了分贝声压级以及满量程分贝级两种表示方法。</p>
 <a id="more"></a>
-<h1 id="1-人眼如何感知颜色"><a href="#1-人眼如何感知颜色" class="headerlink" title="1. 人眼如何感知颜色"></a>1. 人眼如何感知颜色</h1><p>人们生活在五彩斑斓的世界中，蓝天白云，碧水青山。这些不同的颜色被人眼所接收，然后被大脑以一种尚未可知的方式处理后，使得我们能够感知到大自然的美景风光。光线是我们能够看见颜色的介质，而光线的本质是电磁波，电磁波按照频率可分为不同的种类，其中可以被人眼所感知到的频率范围只是其中的很小一段，波长在380 nm 至 750 nm 之间。</p>
-<p><img src="/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig1.jpg" alt="电磁波频率"></p>
-<p>单色光在自然界中很少存在，虽然人类可以通过激光来获得。我们常见的，太阳发出的光则是一种混合光，通过棱镜的色散实验可以把太阳光分解。太阳光照射在不同的物体上一部分波长的光波会被吸收，另一部分会被反射，而映入人们眼帘的，经由物体反射光波的波长则决定了人们所看见的颜色。一片菠菜叶子反射太阳光的光谱分布图如下，可以看到波长在可见范围内主要反射的波长为 550 nm左右，而波长为 550 nm 的光波在人眼看来是绿色的，也因此菠菜叶是绿色的。</p>
-<p><img src="/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig2.jpg" alt="菠菜叶频谱分布"></p>
-<p>人的眼中有 3 中视锥细胞来分别感受不同颜色，每种细胞对某种波长的光线最为敏感，并且敏感度向波长两遍递减。第一种对波长约为 560 nm 最为敏感， 有时将这种类型视锥细胞称为L 。 第二种类型对波长为 530 nm 最为敏感，有时简称为 M。 第三种类型对波长为 420 nm 最为敏感，有时简称为 S，三种细胞对不同波长光线的敏感度如下图所示。</p>
-<p><img src="/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig3.jpg" alt="视锥细胞敏感度"></p>
-<p>一种混合光线（一种频谱分布）进入人们的眼睛时，会同时刺激这三种不同类型的视锥细胞，每种细胞产生不同的刺激。大脑将会根据这三种不同刺激的程度呈现出不同的颜色。而人眼这种感知颜色的方式是有损的，它将多种波长的光分解为三种刺激，因此，就有可能不同频谱分布的混合光线在人眼中呈现出同一种颜色，人眼所看的颜色则不能推出该颜色光线的实际频谱分布，因为它有多种可能。这种现象称为异色现象，它对色彩的重现有着巨大的影响。这也意味着我们不需要对原始光线进行模拟就能重现出它的颜色，只需要对人眼的三种视锥细胞产生相同的刺激即可。</p>
-<p>在人眼中初了视锥细胞之外，还有一种视觉细胞叫视杆细胞，视杆细胞不能产生色觉，但他对光线的明亮与否格外敏感。视杆细胞对可见光的敏感程度分布图如下。可见，视杆细胞对 500 nm 波长光波最为敏感，即对于相同亮度不同颜色的光线，人们会觉得绿色更为明亮些。</p>
-<p><img src="/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig4.jpg" alt="视杆细胞敏感图"></p>
-<h1 id="2-RGB-颜色格式"><a href="#2-RGB-颜色格式" class="headerlink" title="2. RGB 颜色格式"></a>2. RGB 颜色格式</h1><p>当今，RGB 颜色格式广泛应用于计算机领域，如 LCD 显示器。RGB 颜色格式与人眼的三种视锥细胞相似，RGB 颜色格式规定了三种基本颜色，这三种颜色中的任意一种不能由其他两种颜色混合而成，其他任意颜色则由这三种基本颜色不同比例混合而成。在CIE 1931 标准中规定了这三种基本颜色的波长为 700 nm（红），546.1 nm（绿）、435.8 nm（蓝）。</p>
-<p>对波长为 610 nm （橙黄）的光用 RGB 颜色格式表示如下图所示。r(λ)、g(λ)、b(λ) 分别为模拟波长为 λ 的光线时所需要的基本颜色光亮度。当 λ = 610 时，r(λ)=0.34765、g(λ)=0.04776、b(λ)=-0.00038。</p>
-<p><img src="/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig5.jpg" alt></p>
-<p>注意到 b(λ) 为负值，而亮度为负的光线是不存在的，因此在模拟波长为 610 nm 的光颜色时，仅仅是把蓝色基本光的亮度置为 0。所以，模拟出的橙黄色与610 nm 的单色光的颜色并不一致，但是非常接近。另一方面也说明 RGB 颜色格式无法表示所有的颜色，其所能表示的颜色是有限的。</p>
-<p>r(λ)、g(λ)、b(λ) 的值为三色激励值，但是这种以光亮度表示的三色激励值的混合结果难以想象与可视化。一种简单的可视化方式是省略掉亮度信息（亮红与暗红相同）。这种表示方法即为将三色激励值 r(λ)、g(λ)、b(λ) 转换为色度坐标 r、g、b，计算方法如下。</p>
+<h1 id="脉冲编码调制"><a href="#脉冲编码调制" class="headerlink" title="脉冲编码调制"></a>脉冲编码调制</h1><p>脉冲编码调制（PCM，Pulse Code Modulation）是一种将模拟信号转变为数字的信号的方法，该方法通过采样、量化、编码三个步骤完成这种转换。</p>
+<p>对于一段模拟信号，PCM 首先利用某一固定频率（采用频率）对连续的模拟信号进行采用，得到一系列离散的采样点以及与之对应的数据。其次，用某一固定的量化等级 n 对所有采样点进行量化，n 通常代表一个采样点需要多少二进制位来存储，n 越大需要的存储空间也越大同时量化后的数据与真实值之间的误差也越小。最后，对所有采样点进行二进制编码，从而完成模拟信号到数字信号的转换。</p>
+<p>如下图所示，红色曲线表示连续模拟信号，等间隔的竖直虚线与红色曲线的焦点为采样点，蓝色圆点为量化后的采样点。图下方的0-1编码即为对采样点数据的二进制编码。</p>
+<p><img src="/2020/03/07/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E9%9F%B3%E9%A2%91%E4%B8%AD%E4%BF%A1%E5%99%AA%E6%AF%94/Fig.1.png" alt></p>
+<h1 id="信噪比"><a href="#信噪比" class="headerlink" title="信噪比"></a>信噪比</h1><p>由于在量化采样数据时会产生误差，因此需要一种物理量可以用来度量这种误差，即<strong>信噪比</strong>（SNR，Signal-to-Noise Ratio）。在模拟通信中，信噪比一般定义为信号的平均功率与噪声功率的比值。对于数字图像和声音来说，信噪比定义为<strong>最大样本值</strong>与<strong>最大量化误差</strong>的比值。若量化等级为 n，那么样本值为 $[-2^{n-1},2^{n-1}-1]$ 之间，最大样本值即为 $2^{n-1}$，量化间隔为 $1$ 最小量化误差即为 $1/2$。由此可以看出，数字图像和声音的信噪比只取决于量化等级 $n$，任何使用相同量化等级的数字图像或声音都有着相同的信噪比，所以数字图像与声音的信噪比又称为<strong>信号-量化噪声比</strong>（SQNR，Signal-to-Quantization-Noise Ratio）。</p>
+<p>SNR、SQNR 的单位通常使用<strong>分贝</strong>（dB，decibel）来表示。分贝是一个无量纲的单位，用来描述两个物理量之间的相对强度，分贝的表达式有如下：</p>
 <script type="math/tex; mode=display">
-r=\frac{r(\lambda)}{r(\lambda)+g(\lambda)+b(\lambda)}</script><script type="math/tex; mode=display">
-g=\frac{g(\lambda)}{r(\lambda)+g(\lambda)+b(\lambda)}</script><script type="math/tex; mode=display">
-b=\frac{b(\lambda)}{r(\lambda)+g(\lambda)+b(\lambda)}</script><p>转换为色度坐标后，每一种颜色的可见光（λ不同）都可以得到一个色度坐标 (r, g, b)，并且 r + g + b = 1，由此可以看出，任意给出 r、g、b 中两个值，就可以得到另外一个值。在三维坐标空间中通过 r，g，b 可以绘制出一条光谱颜色曲线如蓝色所示。省略一个维度并不会丢失信息，令 b = 0，将其投影到 rg 平面后如品红色曲线所示。</p>
-<p><img src="/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig6.gif" alt="色度曲线" style="zoom:50%;"></p>
-<p>在 rg 平面的投影图如下所示：</p>
-<p><img src="/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig7.jpg" style="zoom: 50%;"></p>
-<p>在上图中：</p>
-<ul>
-<li>所有位于曲线上的点的颜色均为光谱颜色；</li>
-<li>所有位于曲线内部的点均为非光谱颜色；</li>
-<li>所有位于曲线外部的点无意义，所表示的颜色在现实中也不存在；</li>
-<li>所有在曲线内三种基本颜色点所构成的三角形内的点，均可以被这三种基本颜色创建；</li>
-<li>所有在曲线内不在三种基本颜色点所构成的三角形内的点是合理色度颜色，但需要其他的三种基本颜色来创建；</li>
-</ul>
-<h1 id="3-CIE-XYZ-颜色格式"><a href="#3-CIE-XYZ-颜色格式" class="headerlink" title="3. CIE XYZ 颜色格式"></a>3. CIE XYZ 颜色格式</h1><p>选择不同的三种基本颜色，可以获得不同的可显示色彩范围。但由此也带来一个问题，如何准确的告诉别人一个颜色？不仅要包含三种基本色的信息还需要三种基本色的比例。但是，如果对方的显示器使用的是不同的三种基本色，那么对方的显示器则无法准确的显示出该种颜色。因为，缺少一种从一个RGB色度坐标转换到另一种RGB色度坐标的方法。</p>
-<p>CIE XYZ 颜色格式则提供了这种转换。CIE XYZ 是设备无关的，包含了所有颜色的颜色空间。由于 CIE XYZ 需要包含所有光谱色度和非光谱色度，它所选的三种基本色中将包含光谱曲线之外的点。因此，CIE XYZ 颜色并不能应用于实际，它提供一种比较多种色度空间和在这些空间中进行颜色转换的能力。</p>
-<p><img src="/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig8.png" style="zoom:33%;"></p>
-<p>图中黑色圆点、三角、方框即为 CIE XYZ 的三种基本色，均是现实世界中不存在的、无意义的颜色点，其所构成的三角形包含了所有的光谱颜色和非光谱颜色。将 CIE XYZ 颜色格式的三种基本色的所构成的三角形，从 rg 平面中的狭长的三角形状转换为 xy 平面中的腰长为 1 的等腰直角三角形。通过这种转换，将使得 X、Y、Z 三种基本光的比例均为非负值。在 xyz 空间中，对光谱颜色进行模拟的比例函数图如下。</p>
-<p><img src="/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig9.jpg" alt></p>
-<p>多种不同色域的显示色彩范围在 CIE XYZ 中的比较如下。</p>
-<p><img src="/2020/02/13/%E9%A2%9C%E8%89%B2%E5%9C%A8%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%A1%A8%E7%A4%BA%E6%96%B9%E6%B3%95/Fig10.jpg" alt></p>
+1dB=20log_{10} \left( \frac{E}{E_0} \right) \tag1</script><p>$E$ 为振幅、电势或压力。若考虑功率为 $I$，电势为 $E$，电阻为 $R$，则有：</p>
+<script type="math/tex; mode=display">
+I=\frac{E^2}{R} \tag2</script><p>联合式（1）、式（2）有：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+1dB &= 20log_{10} \left( \frac{E}{E_0} \right) \\
+&= 10log_{10} \left( \frac{E}{E_0} \right)^2 \\
+&= 10log_{10} \left( \frac{E^2/R}{E_0^2/R} \right) \\
+&= 10log_{10} \left( \frac{I}{I_0} \right) \\
+\end{align*} \tag3</script><p>由式（1）（3）可知，分贝即可以表示强度型号，如振幅、压强等，又可以表示功率信号，如激光器的光功率。</p>
+<p>基于此，对于量化等级为 n 的数字图像或声音，其 SQNR 为</p>
+<script type="math/tex; mode=display">
+SQNR=20log_{10} \left( \frac{2^{n-1}}{1/2} \right)=20log_{10}(2^n)</script><h1 id="分贝"><a href="#分贝" class="headerlink" title="分贝"></a>分贝</h1><p>分贝是一种表示两个物理量相对强度的方法，在通信系统中常作为信噪比的单位。这里将对分贝如何表示声音的强度进行说明。</p>
+<p><strong>分贝声压级（decibel Sound Pressure level， dBSP）</strong></p>
+<p>分贝声压级常见于日常生活之中，用于表示声音的大小。分贝声压级使用气压变化来定义声音大小。气压变化的振幅定义为与正常背景大气压的平均差值。人类听力的阈值（1000Hz声波）与正常背景大气压的差值为 $2\times 10^{-5}$ Pa，如果气压的变化幅度小于该阈值，那么人类不会听见任何声音。分贝声压级即以该阈值为参考值（$E_0=2\times 10^{-5}$）从而计算分贝。例如当声音分贝为 60 dB 时，其引起的气压振幅为 0.02 Pa，计算式如下。</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+60 &= 20 log_{10} \left( \frac{E}{0.00002 Pa} \right) \\
+60 &= 20 log_{10} \left( \frac{50000E}{Pa} \right) \\
+E &= 0.02 Pa
+\end{align*}</script><p>常见声音的分贝值如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">声音</th>
+<th style="text-align:center">分贝</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">人类听力阈值</td>
+<td style="text-align:center">0 dB</td>
+</tr>
+<tr>
+<td style="text-align:center">沙沙作响的树叶</td>
+<td style="text-align:center">20 dB</td>
+</tr>
+<tr>
+<td style="text-align:center">谈话</td>
+<td style="text-align:center">60~70 dB</td>
+</tr>
+<tr>
+<td style="text-align:center">电钻</td>
+<td style="text-align:center">&gt;100 dB</td>
+</tr>
+<tr>
+<td style="text-align:center">引起头疼</td>
+<td style="text-align:center">130 dB</td>
+</tr>
+<tr>
+<td style="text-align:center">使耳膜受损</td>
+<td style="text-align:center">160 dB</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p> <strong>满量程分贝级（decibel Full Scale level，dBFS）</strong></p>
+<p>满量程分贝级常见于各类音频处理软件。不同于 dBSP 使用人类听力阈值作为参考标准，dBFS 将最大可能振幅作为参考标准。最大可能振幅是与设备相关，与音频文件、量化等级无关。即同一个音频文件在扬声器中播放与在耳机中播放的dBSP是不同的，但是 0 dB 即代表着播放设备的最大音量。</p>
+<p>例如量化等级为 $n=16$，dBFS 的计算式如下：</p>
+<script type="math/tex; mode=display">
+dBFS=20log_{10}\left( \frac{|x|}{2^{n-1}} \right)，x \in [-2^{n-1}, 2^{n-1}-1]</script><p>通过计算可知，当$x=-32768$ 时，$dBFS=0 dB$、当$x=10000$ 时，$dBFS=-10.3 dB$、当$x=1$ 时，$dBFS=-90.3 dB$、当$x=0.5$ 时，$dBFS=-96.3296 dB$。当 $x$ 为最大振幅时，$dBFS$ 为 $0 dB$。当 $x$ 为最大量化误差 $0.5$ 时，$dBFS$ 为 $-96dB$。 当编码格式采用 16 bit PCM 时，若振幅小于 $-96 dB$ 则会表示为静音。开源音频处理程序 Audacity 的界面如下所示，图中展示了一幅  16 bit PCM 编码的音频振幅。</p>
+<p><img src="/2020/03/07/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E9%9F%B3%E9%A2%91%E4%B8%AD%E4%BF%A1%E5%99%AA%E6%AF%94/Fig.2.png" alt></p>
 
     </div>
 
@@ -272,13 +298,10 @@ b=\frac{b(\lambda)}{r(\lambda)+g(\lambda)+b(\lambda)}</script><p>转换为色度
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2019/10/06/%E7%BC%96%E8%AF%91%E5%B7%A5%E5%85%B7%E9%93%BE%E5%88%B6%E4%BD%9C-x86-64-linux-uclibc/" rel="prev" title="编译工具链制作-x86_64-linux-uclibc">
-      <i class="fa fa-chevron-left"></i> 编译工具链制作-x86_64-linux-uclibc
+    <a href="/2020/02/24/%E7%B4%A2%E5%BC%95%E9%A2%9C%E8%89%B2%E4%B8%8E%E6%8A%96%E5%8A%A8/" rel="prev" title="索引颜色与抖动">
+      <i class="fa fa-chevron-left"></i> 索引颜色与抖动
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/02/24/%E7%B4%A2%E5%BC%95%E9%A2%9C%E8%89%B2%E4%B8%8E%E6%8A%96%E5%8A%A8/" rel="next" title="索引颜色与抖动">
-      索引颜色与抖动 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -339,7 +362,7 @@ b=\frac{b(\lambda)}{r(\lambda)+g(\lambda)+b(\lambda)}</script><p>转换为色度
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-人眼如何感知颜色"><span class="nav-number">1.</span> <span class="nav-text">1. 人眼如何感知颜色</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-RGB-颜色格式"><span class="nav-number">2.</span> <span class="nav-text">2. RGB 颜色格式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-CIE-XYZ-颜色格式"><span class="nav-number">3.</span> <span class="nav-text">3. CIE XYZ 颜色格式</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#脉冲编码调制"><span class="nav-number">1.</span> <span class="nav-text">脉冲编码调制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#信噪比"><span class="nav-number">2.</span> <span class="nav-text">信噪比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分贝"><span class="nav-number">3.</span> <span class="nav-text">分贝</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -544,7 +567,7 @@ NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
       repo        : 'panderan.github.io',
       owner       : 'panderan',
       admin       : ['panderan'],
-      id          : '颜色在计算机中的表示方法',
+      id          : '脉冲编码调制、数字图像/音频信噪比、分贝',
         language: '',
       distractionFreeMode: true
     });
