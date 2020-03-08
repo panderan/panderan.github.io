@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://panderan.github.io/2020/03/07/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E9%9F%B3%E9%A2%91%E4%B8%AD%E4%BF%A1%E5%99%AA%E6%AF%94/Fig.1.png">
 <meta property="og:image" content="https://panderan.github.io/2020/03/07/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E9%9F%B3%E9%A2%91%E4%B8%AD%E4%BF%A1%E5%99%AA%E6%AF%94/Fig.2.png">
 <meta property="article:published_time" content="2020-03-07T13:44:55.000Z">
-<meta property="article:modified_time" content="2020-03-07T15:54:42.864Z">
+<meta property="article:modified_time" content="2020-03-08T05:10:05.139Z">
 <meta property="article:author" content="Deran Pan">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://panderan.github.io/2020/03/07/%E6%95%B0%E5%AD%97%E5%9B%BE%E5%83%8F%E9%9F%B3%E9%A2%91%E4%B8%AD%E4%BF%A1%E5%99%AA%E6%AF%94/Fig.1.png">
@@ -232,7 +232,9 @@ I=\frac{E^2}{R} \tag2</script><p>联合式（1）、式（2）有：</p>
 \end{align*} \tag3</script><p>由式（1）（3）可知，分贝即可以表示强度型号，如振幅、压强等，又可以表示功率信号，如激光器的光功率。</p>
 <p>基于此，对于量化等级为 n 的数字图像或声音，其 SQNR 为</p>
 <script type="math/tex; mode=display">
-SQNR=20log_{10} \left( \frac{2^{n-1}}{1/2} \right)=20log_{10}(2^n)</script><h1 id="分贝"><a href="#分贝" class="headerlink" title="分贝"></a>分贝</h1><p>分贝是一种表示两个物理量相对强度的方法，在通信系统中常作为信噪比的单位。这里将对分贝如何表示声音的强度进行说明。</p>
+SQNR=20log_{10} \left( \frac{2^{n-1}}{1/2} \right)=20log_{10}(2^n)</script><p>此外，动态范围与 SQNR 有着相似的定义，动态范围为最大振幅与最小非零值的比值，若量化等级为 n ，用分贝进行表示如下。有时候，动态范围与SQNR的概念可以互换。</p>
+<script type="math/tex; mode=display">
+20log_{10} \left( \frac{2^n}{1} \right) \approx6n</script><h1 id="分贝"><a href="#分贝" class="headerlink" title="分贝"></a>分贝</h1><p>分贝是一种表示两个物理量相对强度的方法，在通信系统中常作为信噪比的单位。这里将对分贝如何表示声音的强度进行说明。</p>
 <p><strong>分贝声压级（decibel Sound Pressure level， dBSP）</strong></p>
 <p>分贝声压级常见于日常生活之中，用于表示声音的大小。分贝声压级使用气压变化来定义声音大小。气压变化的振幅定义为与正常背景大气压的平均差值。人类听力的阈值（1000Hz声波）与正常背景大气压的差值为 $2\times 10^{-5}$ Pa，如果气压的变化幅度小于该阈值，那么人类不会听见任何声音。分贝声压级即以该阈值为参考值（$E_0=2\times 10^{-5}$）从而计算分贝。例如当声音分贝为 60 dB 时，其引起的气压振幅为 0.02 Pa，计算式如下。</p>
 <script type="math/tex; mode=display">
