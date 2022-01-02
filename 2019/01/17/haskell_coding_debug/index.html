@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="GHCi 包含一个基本的 Debug 工具。利用此工具可以暂停一个运行的程序从而可以进行变量的检查。在 GHCi 中 Debugger 是默认开启的，不需要指定额外的标志。唯一的限制就是只能在解释运行时才能使用断点（breakpoints）和单步（single-stepping）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[文档翻译] Haskell Debug">
+<meta property="og:url" content="https://panderan.github.io/2019/01/17/haskell_coding_debug/index.html">
+<meta property="og:site_name" content="Deran Pan&#39;s Pages">
+<meta property="og:description" content="GHCi 包含一个基本的 Debug 工具。利用此工具可以暂停一个运行的程序从而可以进行变量的检查。在 GHCi 中 Debugger 是默认开启的，不需要指定额外的标志。唯一的限制就是只能在解释运行时才能使用断点（breakpoints）和单步（single-stepping）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-01-17T10:39:27.000Z">
+<meta property="article:modified_time" content="2022-01-01T14:07:40.337Z">
+<meta property="article:author" content="Deran Pan">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>[文档翻译] Haskell Debug</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2019/04/02/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Detecting-Text-in-Natural-Scenes-with-Stroke-Width-Transform/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2019/01/17/haskell_coding_debug/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&text=[文档翻译] Haskell Debug"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&title=[文档翻译] Haskell Debug"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&is_video=false&description=[文档翻译] Haskell Debug"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=[文档翻译] Haskell Debug&body=Check out this article: https://panderan.github.io/2019/01/17/haskell_coding_debug/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&title=[文档翻译] Haskell Debug"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&title=[文档翻译] Haskell Debug"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&title=[文档翻译] Haskell Debug"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&title=[文档翻译] Haskell Debug"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&name=[文档翻译] Haskell Debug&description=&lt;p&gt;GHCi 包含一个基本的 Debug 工具。利用此工具可以暂停一个运行的程序从而可以进行变量的检查。在 GHCi 中 Debugger 是默认开启的，不需要指定额外的标志。唯一的限制就是只能在解释运行时才能使用断点（breakpoints）和单步（single-stepping）。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2019/01/17/haskell_coding_debug/&t=[文档翻译] Haskell Debug"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Breakpoints-and-Inspecting-variables"><span class="toc-number">1.</span> <span class="toc-text">1. Breakpoints and Inspecting variables</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-Setting-breakpoints"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 Setting breakpoints</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-Listing-and-deleting-breakpoints"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 Listing and deleting breakpoints</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Single-stepping"><span class="toc-number">2.</span> <span class="toc-text">2. Single-stepping</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Nested-breakpoints"><span class="toc-number">3.</span> <span class="toc-text">3. Nested breakpoints</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-The-result-variable"><span class="toc-number">4.</span> <span class="toc-text">4. The _result variable</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Tracing-and-history"><span class="toc-number">5.</span> <span class="toc-text">5. Tracing and history</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        [文档翻译] Haskell Debug
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deran Pan</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-01-17T10:39:27.000Z" itemprop="datePublished">2019-01-17</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E7%BF%BB%E8%AF%91/">翻译</a> › <a class="category-link" href="/categories/%E7%BF%BB%E8%AF%91/%E7%BC%96%E7%A8%8B/">编程</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>GHCi 包含一个基本的 Debug 工具。利用此工具可以暂停一个运行的程序从而可以进行变量的检查。在 GHCi 中 Debugger 是默认开启的，不需要指定额外的标志。唯一的限制就是只能在解释运行时才能使用断点（breakpoints）和单步（single-stepping）。</p>
+<span id="more"></span>
+<p>GHCi Debugger 提供一下功能：</p>
+<ol>
+<li>对函数和表达式设置断点。</li>
+<li>支持单步运行。</li>
+<li>可以在 tracing mode 运行程序</li>
+<li>Exeception 可以被当做断点。</li>
+</ol>
+<p>目前不支持获取 “stack trace”，但是可以使用 tracing 和 history 特性。</p>
+<h2 id="1-Breakpoints-and-Inspecting-variables"><a href="#1-Breakpoints-and-Inspecting-variables" class="headerlink" title="1. Breakpoints and Inspecting variables"></a>1. Breakpoints and Inspecting variables</h2><p>首先用快速排序作为一个例子，代码如下：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>| qsort [] = []</span><br><span class="line"><span class="number">2</span>| qsort (a:<span class="keyword">as</span>) = qsort left ++ [a] ++ qsort right</span><br><span class="line"><span class="number">3</span>|     <span class="keyword">where</span> (left, right) = (filter (&lt;=a) <span class="keyword">as</span>, filter (&gt;a) <span class="keyword">as</span>)</span><br><span class="line"><span class="number">4</span>| </span><br><span class="line"><span class="number">5</span>| main = print (qsort [<span class="number">8</span>, <span class="number">4</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">23</span>, <span class="number">11</span>, <span class="number">18</span>])</span><br></pre></td></tr></table></figure>
+<ol>
+<li>加载代码至 GHCi</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">user@hostname:~$ Temp ghci</span><br><span class="line">GHCi, version 7.10.3: http://www.haskell.org/ghc/  :? for help</span><br><span class="line">Prelude&gt; :l qsort.hs</span><br><span class="line">[1 of 1] Compiling Main             ( qsort.hs, interpreted )</span><br><span class="line">Ok, modules loaded: Main.</span><br><span class="line">*Main&gt;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>在 qsort.hs 第二行设置一个断点</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">*Main&gt; :break 2</span><br><span class="line">Breakpoint 0 activated at qsort.hs:2:16-47</span><br><span class="line">*Main&gt;</span><br></pre></td></tr></table></figure>
+<p>:break 2 命令在最近加载文件的第 2 行设置了一个断点，这里就是 qsort.hs 文件。</p>
+<ol>
+<li>运行程序</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">*Main&gt; main</span><br><span class="line">Stopped at qsort.hs:2:16-47</span><br><span class="line">_result :: [Integer] = _</span><br><span class="line">a :: Integer = 8</span><br><span class="line">left :: [Integer] = _</span><br><span class="line">right :: [Integer] = _</span><br><span class="line">[qsort.hs:2:16-47] *Main&gt;</span><br></pre></td></tr></table></figure>
+<p>程序将在断点处停止，提示符的改变也意味着我们当前停止在 qsort.hs:2:16-47 断点处。使用 :list 命令可以更清楚的显示当前断点位置。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[qsort.hs:2:16-47] *Main&gt; :list</span><br><span class="line">1  qsort [] = []</span><br><span class="line">2  qsort (a:as) = qsort left ++ [a] ++ qsort right</span><br><span class="line">                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span><br><span class="line">3      where (left, right) = (filter (&lt;=a) as, filter (&gt;a) as)</span><br><span class="line">[qsort.hs:2:16-47] *Main&gt;</span><br></pre></td></tr></table></figure>
+<p>:list 命令将显示断点附近的代码，如果显示设备支持，断点处将会特别标注。</p>
+<p>GHCi 会提供对断点处表达式的变量绑定（a，left，right），并且还有一个对于表达式结果的绑定（_result）。这些变量和通常在 GHCi 中定义的变量一样，可以在提示符中使用它们，用 :type 命令来获取它们的类型。用 :print 或 :force 来打印它们。:force 相比于 :print 命令会将表达式计算至常态并显示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[qsort.hs:2:16-47] *Main&gt; :print right</span><br><span class="line">right = (_t1::[Integer])</span><br><span class="line">[qsort.hs:2:16-47] *Main&gt; :force right</span><br><span class="line">right = [23,11,18]</span><br></pre></td></tr></table></figure>
+<p>同样，使用 seq 可以计算出单个的值，而不是像 :force 一样计算出整个表达式。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[qsort.hs:2:16-47] *Main&gt; :print left</span><br><span class="line">left = (_t1::[Integer])</span><br><span class="line">[qsort.hs:2:16-47] *Main&gt; seq _t1 ()</span><br><span class="line">()</span><br><span class="line">[qsort.hs:2:16-47] *Main&gt; :print left</span><br><span class="line">left = 4 : (_t2::[Integer])</span><br></pre></td></tr></table></figure>
+<p>最后，我们可以用 :continue 命令让程序继续运行，直到遇到下一个断点。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[qsort.hs:2:16-47] *Main&gt; :continue</span><br><span class="line">Stopped at qsort.hs:2:16-47</span><br><span class="line">_result :: [Integer] = _</span><br><span class="line">a :: Integer = 4</span><br><span class="line">left :: [Integer] = _</span><br><span class="line">right :: [Integer] = _</span><br><span class="line">[qsort.hs:2:16-47] *Main&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="1-1-Setting-breakpoints"><a href="#1-1-Setting-breakpoints" class="headerlink" title="1.1 Setting breakpoints"></a>1.1 Setting breakpoints</h3><p>设置断点的方式有很多中，其中最方便的应该是使用最顶层的函数名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">:break identifier</span><br></pre></td></tr></table></figure>
+<p>identifier 是任何当前加载进入 GHCi 的顶层函数名。</p>
+<p>断点还可以按行（和列）来设置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">:break line</span><br><span class="line">:break line column</span><br><span class="line">:break module line</span><br><span class="line">:break module line column</span><br></pre></td></tr></table></figure>
+<h3 id="1-2-Listing-and-deleting-breakpoints"><a href="#1-2-Listing-and-deleting-breakpoints" class="headerlink" title="1.2 Listing and deleting breakpoints"></a>1.2 Listing and deleting breakpoints</h3><p>使用 :show breaks 可以显示当前断点。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[qsort.hs:2:16-47] *Main&gt; :break main</span><br><span class="line">Breakpoint 1 activated at qsort.hs:5:8-48</span><br><span class="line">[qsort.hs:2:16-47] *Main&gt; :show breaks</span><br><span class="line">[0] Main qsort.hs:2:16-47</span><br><span class="line">[1] Main qsort.hs:5:8-48</span><br></pre></td></tr></table></figure>
+<p>删除断点可以使用 :delete 命令并指定断点编号。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[qsort.hs:2:16-47] *Main&gt; :delete 1</span><br><span class="line">[qsort.hs:2:16-47] *Main&gt; :show breaks</span><br><span class="line">[0] Main qsort.hs:2:16-47</span><br><span class="line">[qsort.hs:2:16-47] *Main&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="2-Single-stepping"><a href="#2-Single-stepping" class="headerlink" title="2. Single-stepping"></a>2. Single-stepping</h2><p>单步是观测程序运行的最好的方法，并且也是寻找 Bug 的有利工具。使用 :step 命令，将启用程序中的全部断点并运行程序。使用 :steplocal 将只启用当前顶层函数中的所有断点。同样，使用 :stepmodule 将只在当前模块中进行单步。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">*Main&gt; :step main</span><br><span class="line">Stopped at qsort.hs:5:8-48</span><br><span class="line">_result :: IO () = _</span><br><span class="line">[qsort.hs:5:8-48] *Main&gt; :list</span><br><span class="line">4</span><br><span class="line">5  main = print (qsort [8, 4, 0, 3, 1, 23, 11, 18])</span><br><span class="line">          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span><br><span class="line">6</span><br><span class="line">[qsort.hs:5:8-48] *Main&gt;</span><br></pre></td></tr></table></figure>
+<p>在单步中使用 :list 命令，可以很方便的获取当前位置。另外，在 GHCi 中可以设置当遇见断点时自动执行命令。因此我们可以让它自动执行 :list 命令。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[qsort.hs:5:8-48] *Main&gt; :set stop :list</span><br><span class="line">[qsort.hs:5:8-48] *Main&gt; :step</span><br><span class="line">Stopped at qsort.hs:5:15-47</span><br><span class="line">_result :: [Integer] = _</span><br><span class="line">4</span><br><span class="line">5  main = print (qsort [8, 4, 0, 3, 1, 23, 11, 18])</span><br><span class="line">                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span><br><span class="line">6</span><br><span class="line">[qsort.hs:5:15-47] *Main&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="3-Nested-breakpoints"><a href="#3-Nested-breakpoints" class="headerlink" title="3. Nested breakpoints"></a>3. Nested breakpoints</h2><p>当 GHCi 处于一个断点处时，如果此时在命令行键入一个命令并遇到一个新的断点，那么新的断点将会作为当前断点，旧的断点将会保存在栈中。示例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">*Main&gt; :break qsort</span><br><span class="line">Breakpoint 0 activated at qsort.hs:(1,1)-(3,59)</span><br><span class="line">*Main&gt; main</span><br><span class="line">Stopped at qsort.hs:(1,1)-(3,59)</span><br><span class="line">_result :: [t] = _</span><br><span class="line">[qsort.hs:(1,1)-(3,59)] *Main&gt; :step qsort [1,3,6,5]</span><br><span class="line">Stopped at qsort.hs:(1,1)-(3,59)</span><br><span class="line">_result :: [t] = _</span><br><span class="line">... [qsort.hs:(1,1)-(3,59)] *Main&gt;</span><br></pre></td></tr></table></figure>
+<p>当第一次停止在 qsort 上时，我们再次执行 :step [1,3,6,5]，这个新的命令将又会停止在第一步。此时可以观察到提示符的变化。提示符前有 “….” 前缀，表示当前断点处还有一个保存的断点。使用 :show context 命令可以观察保存的断点处。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">... [qsort.hs:(1,1)-(3,59)] *Main&gt; :show context</span><br><span class="line">--&gt; main</span><br><span class="line">  Stopped at qsort.hs:(1,1)-(3,59)</span><br><span class="line">--&gt; qsort [1,3,6,5]</span><br><span class="line">  Stopped at qsort.hs:(1,1)-(3,59)</span><br><span class="line">... [qsort.hs:(1,1)-(3,59)] *Main&gt;</span><br></pre></td></tr></table></figure>
+<p>删除当前断点处可以使用 :abandon 命令。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">... [qsort.hs:(1,1)-(3,59)] *Main&gt; :abandon</span><br><span class="line">[qsort.hs:(1,1)-(3,59)] *Main&gt; :abandon</span><br><span class="line">*Main&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="4-The-result-variable"><a href="#4-The-result-variable" class="headerlink" title="4. The _result variable"></a>4. The _result variable</h2><p>当程序停止在断点处或进行单步时，GHCi 绑定了当前表达式的值到 _result 变量。由于暂停了当前表达式的计算，因此 _result 是不可用的，但是可以使用 :force 来进行强制计算。如果 _result 的类型是已知并可显示的，那么在命令行键入 _result 就可以显示它。但是这样做有一个警告，计算 _result 很有可能会出发将来的断点，因此在计算 _result 时可能需要键入 :continue 命令。除非使用 :force 命令，它将忽略将来的断点。</p>
+<h2 id="5-Tracing-and-history"><a href="#5-Tracing-and-history" class="headerlink" title="5. Tracing and history"></a>5. Tracing and history</h2><p>通常在 Debug 时需要确定的问题就是＂程序是如何运行到这里的？＂。传统的 Debugger 工具会提供必要的 stack-tracing 特性，可以显示当前程序的调用堆栈。但是不幸运的是，因为 Haskell 是按需计算的，所以难以提供这样的特性。Haskell 中的 Stack 与传统的调用堆栈几乎没有相似之处。理想情况下，除了动态调用堆栈之外，GHCi 还应该维护一个单独的词汇调用堆栈，事实上，这正是分析系统（Profiling）所做的，以及其他 Haskell 调试器所做的。然而，目前 GHCi 还没有维护词汇调用堆栈（需要克服一些技术挑战）。相反，我们提供了一种从断点回溯到之前表达式的方法：本质上，这就像单步后退，在许多情况下，应该提供足够的信息来回答＂程序是如何运行到这里的？＂的问题。</p>
+<p>使用 Tracing，可以利用 :tracing 命令来运行表达式。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Breakpoints-and-Inspecting-variables"><span class="toc-number">1.</span> <span class="toc-text">1. Breakpoints and Inspecting variables</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-Setting-breakpoints"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 Setting breakpoints</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-Listing-and-deleting-breakpoints"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 Listing and deleting breakpoints</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Single-stepping"><span class="toc-number">2.</span> <span class="toc-text">2. Single-stepping</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Nested-breakpoints"><span class="toc-number">3.</span> <span class="toc-text">3. Nested breakpoints</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-The-result-variable"><span class="toc-number">4.</span> <span class="toc-text">4. The _result variable</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Tracing-and-history"><span class="toc-number">5.</span> <span class="toc-text">5. Tracing and history</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2019/01/17/haskell_coding_debug/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&text=[文档翻译] Haskell Debug"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&title=[文档翻译] Haskell Debug"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&is_video=false&description=[文档翻译] Haskell Debug"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=[文档翻译] Haskell Debug&body=Check out this article: https://panderan.github.io/2019/01/17/haskell_coding_debug/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&title=[文档翻译] Haskell Debug"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&title=[文档翻译] Haskell Debug"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&title=[文档翻译] Haskell Debug"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&title=[文档翻译] Haskell Debug"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2019/01/17/haskell_coding_debug/&name=[文档翻译] Haskell Debug&description=&lt;p&gt;GHCi 包含一个基本的 Debug 工具。利用此工具可以暂停一个运行的程序从而可以进行变量的检查。在 GHCi 中 Debugger 是默认开启的，不需要指定额外的标志。唯一的限制就是只能在解释运行时才能使用断点（breakpoints）和单步（single-stepping）。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2019/01/17/haskell_coding_debug/&t=[文档翻译] Haskell Debug"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2022
+    Deran Pan
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

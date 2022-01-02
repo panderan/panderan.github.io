@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="基于主成分分析（PCA）人脸识别的分析与实现。首先讨论了矩阵乘法的含义，接着尝试推导了主成分的计算过程，并最终将其应用于人脸图像，在多维空间中采用欧氏距离比较人脸数据。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PCA 人脸识别">
+<meta property="og:url" content="https://panderan.github.io/2018/01/30/pca_face_recognition/index.html">
+<meta property="og:site_name" content="Deran Pan&#39;s Pages">
+<meta property="og:description" content="基于主成分分析（PCA）人脸识别的分析与实现。首先讨论了矩阵乘法的含义，接着尝试推导了主成分的计算过程，并最终将其应用于人脸图像，在多维空间中采用欧氏距离比较人脸数据。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://panderan.github.io/2018/01/30/pca_face_recognition/PCA人脸识别/blg-016-1.jpg">
+<meta property="article:published_time" content="2018-01-30T04:14:50.000Z">
+<meta property="article:modified_time" content="2022-01-01T14:07:40.337Z">
+<meta property="article:author" content="Deran Pan">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://panderan.github.io/2018/01/30/pca_face_recognition/PCA人脸识别/blg-016-1.jpg">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>PCA 人脸识别</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2018/05/06/%E5%9C%A8CXX%E4%B8%AD%E7%94%A8%E5%85%A8%E5%B1%80%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%AE%9E%E7%8E%B0%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2018/01/19/%E3%80%90%E6%9C%9F%E6%9C%AB%E8%B5%84%E6%96%99%E3%80%91%E5%9B%BE%E8%AE%BA/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2018/01/30/pca_face_recognition/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&text=PCA 人脸识别"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&title=PCA 人脸识别"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&is_video=false&description=PCA 人脸识别"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=PCA 人脸识别&body=Check out this article: https://panderan.github.io/2018/01/30/pca_face_recognition/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&title=PCA 人脸识别"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&title=PCA 人脸识别"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&title=PCA 人脸识别"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&title=PCA 人脸识别"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&name=PCA 人脸识别&description=&lt;p&gt;基于主成分分析（PCA）人脸识别的分析与实现。首先讨论了矩阵乘法的含义，接着尝试推导了主成分的计算过程，并最终将其应用于人脸图像，在多维空间中采用欧氏距离比较人脸数据。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2018/01/30/pca_face_recognition/&t=PCA 人脸识别"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">1. 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%9F%A9%E9%98%B5%E4%B9%98%E6%B3%95%E7%9A%84%E5%87%A0%E4%BD%95%E5%90%AB%E4%B9%89"><span class="toc-number">2.</span> <span class="toc-text">2. 矩阵乘法的几何含义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-PCA%E9%99%8D%E7%BB%B4%E7%9A%84%E6%95%B0%E5%AD%A6%E8%BF%90%E7%AE%97%E8%BF%87%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">3. PCA降维的数学运算过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%AE%A1%E7%AE%97%E7%89%B9%E5%BE%81%E5%80%BC%E4%B8%8E%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F"><span class="toc-number">4.</span> <span class="toc-text">4. 计算特征值与特征向量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB%E8%BF%87%E7%A8%8B"><span class="toc-number">5.</span> <span class="toc-text">5. 人脸识别过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BB%A3%E7%A0%81"><span class="toc-number">6.</span> <span class="toc-text">6. 代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">7.</span> <span class="toc-text">7. 参考资料</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        PCA 人脸识别
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deran Pan</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2018-01-30T04:14:50.000Z" itemprop="datePublished">2018-01-30</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>基于主成分分析（PCA）人脸识别的分析与实现。首先讨论了矩阵乘法的含义，接着尝试推导了主成分的计算过程，并最终将其应用于人脸图像，在多维空间中采用欧氏距离比较人脸数据。</p>
+<span id="more"></span>
+<h2 id="1-简介"><a href="#1-简介" class="headerlink" title="1. 简介"></a>1. 简介</h2><p>PCA，即主成分分析。简单来说就是通过坐标系变换将位于原坐标系中的原数据变为在新坐标系下对应的新数据。通常这种变化伴随着数据维度的大幅降低，但是数据信息的损失较小。即减少不同维度之间的相关系，去除信息冗余，提取主成分的意思。</p>
+<p>对于人脸图片识别来说，图片包含的信息量是十分巨大的。一张256*256分辨率的图像将每行像素收尾相接就会形成一个长度为65536大小的一维数组。换句话说一张256*256分辨率的图像拥有65536个维度。因此对于更高分辨率的图片更大的样本数量，如果不对数据降维则对如此巨大的数据进行处理在时间上就已经是不可取的。</p>
+<h2 id="2-矩阵乘法的几何含义"><a href="#2-矩阵乘法的几何含义" class="headerlink" title="2. 矩阵乘法的几何含义"></a>2. 矩阵乘法的几何含义</h2><p>先看下列式子：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+Y &= PX \\
+\left[
+\begin{matrix}
+c _1 \\ c_2 \\ \vdots \\ c_n 
+\end{matrix}
+\right]
+&=
+\left[ 
+\begin{matrix}
+a_{11} & a_{12} & \dots & a_{1n} \\
+a_{21} & a_{22} & \dots & a_{2n} \\
+\vdots  & \vdots  & \ddots & \vdots \\
+a_{m1} & a_{m2} & \dots & a_{mn} \\
+\end{matrix} 
+\right]
+\times
+\left[
+\begin{matrix}
+b _1 \\ b_2 \\ \vdots \\ b_n 
+\end{matrix}
+\right] \\
+\\
+\left[
+\begin{matrix}
+2 \\ 0  
+\end{matrix}
+\right]
+&=
+\left[ 
+\begin{matrix}
+1 & 1 \\
+-1 & 1 \\
+\end{matrix} 
+\right]
+\times
+\left[
+\begin{matrix}
+1 \\ 1 \\
+\end{matrix}
+\right]
+\end{align*} \tag1</script><p>通常来讲一个矩阵乘以一个向量表示表示对这个向量伸缩旋转变换。例如上式所示向量 $X=[1,1]^T$ 经过矩阵相乘后就转变成向量 $Y=[2,0]^T$ 了。但是当矩阵$P$ 的每一行都是线性无关的向量时，那么矩阵$P$ 的所有横向量就可以作为一个新的坐标系的基向量。用它乘以一个其他向量就相当于将该向量的坐标转换为新坐标系下的新坐标，如图所示：</p>
+<p><img src="PCA人脸识别/blg-016-1.jpg" alt="pic1" style="zoom:67%;" /></p>
+<p>由于新基矩阵（黄色）维向量（横向量）的模长为$\sqrt2$ ,所以新坐标系中的向量的模长也要比原向量长$\sqrt2$ 倍。</p>
+<h2 id="3-PCA降维的数学运算过程"><a href="#3-PCA降维的数学运算过程" class="headerlink" title="3. PCA降维的数学运算过程"></a>3. PCA降维的数学运算过程</h2><p>通常样本表示的列向量，如下所示表示一个含有m维数据的样本：</p>
+<script type="math/tex; mode=display">
+x=\lbrack x_1, x_2, \dots, x_m \rbrack^T \tag2</script><p>则原数据$X$可以表示为如下：（$m \times n$ 矩阵， $n$ 个样本，每个样本有$m$ 维数据）</p>
+<script type="math/tex; mode=display">
+X= \left[ 
+\begin{matrix}
+a_{11} & a_{12} & \dots & a_{1n} \\
+a_{21} & a_{22} & \dots & a_{2n} \\
+\vdots  & \vdots  & \ddots & \vdots \\
+a_{m1} & a_{m2} & \dots & a_{mn} \\
+\end{matrix} 
+\right] \tag3</script><p>原数据的协方差$C$ 可以表示为如下：</p>
+<script type="math/tex; mode=display">
+C = \frac{1}{m}XX^T \tag4</script><p>式$(2)、(3)、(4)$ 为已知初始数据，下面将给出我们的目的数据，设$Y$ 来表示降维后的数据，如下所示：</p>
+<script type="math/tex; mode=display">
+Y= \left[ 
+\begin{matrix}
+b_{11} & b_{12} & \dots & b_{1n} \\
+b_{21} & b_{22} & \dots & b_{2n} \\
+\vdots  & \vdots  & \ddots & \vdots \\
+b_{k1} & b_{k2} & \dots & b_{kn} \\
+\end{matrix} 
+\right] (k<m) \tag5</script><p>降维数据$Y$ 的协方差可以表示为如下：</p>
+<script type="math/tex; mode=display">
+D = \frac{1}{m}YY^T \tag6</script><p>到此，我们希望降维数据$Y$ 的协方差矩阵$D$ 上主对角线上的元素尽可能大，而其他元素都为零。因为协防差矩阵表示的是不同维度的相关性，所以这样希望的话就意味着数据在同一维度上尽可能的分散并且维度与维度之间没有相关性。因此想要将原数据$X$ 变为新数据$Y$ 则需要一个新的基矩阵$P$ ，使得：</p>
+<script type="math/tex; mode=display">
+Y=PX \tag7</script><p>式$(7)$ 即为原数据与降维数据的联系，我们最终的目的就是找到满足$D$ 的基矩阵$P$ 。观察下述等式：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+D &= \frac{1}{m}YY^T \\
+&= \frac{1}{m}(PX)(PX)^T \\
+&= \frac{1}{m}PXX^TP^T \\
+&= P(\frac{1}{m}XX^T)P^T \\
+&= PCP^T
+\end{align*} \tag8</script><p>由于原数据$X$ 的协方差矩阵$C$ 为实对称矩阵，因此实对称矩阵$C$ 通过特征分解后如下所示：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+C &= E\Lambda E^T \\
+&= [e_1, e_2, \dots, e_m]
+\left[\begin{matrix}
+\lambda_1 & 0 & \cdots & 0 \\
+0 & \lambda_2 & \cdots & 0 \\
+\vdots & \vdots & \ddots & \vdots \\
+0 & 0 & \cdots & \lambda_m
+\end{matrix}\right] \tag9
+[e_1, e_2, \dots, e_m]^T \\
+& (其中Ce_i=\lambda_ie_i, e_i是特征值\lambda_i所对应的特征向量，列向量)
+\end{align*}</script><p>在式$(9)$ 中我们可以看到矩阵$\Lambda$ 是非常符合降维数据$Y$ 的协方差矩阵$D$ 的要求，主对角线上的元素尽可能大，而其他元素都为零。因此我们联立式$(8)、(9)$ 得：</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\begin{cases}
+D = PCP^T\\
+\Lambda = E^TCE
+\end{cases} \tag{10}
+\end{equation}</script><p>由式${10}$ 可得:</p>
+<script type="math/tex; mode=display">
+P=E^T \tag{11}</script><p>由式$(11)$ 可知，我们所求的基矩阵即为原数据$X$ 的协方差矩阵$C$ 经过特征值分解后的由特征向量组成的矩阵$E^T$ 。在矩阵$E^T$ 中，每一行均是一个特征向量，也是新坐标系中的基向量。在$E^T$ 中有$m$ 行（原数据有$m$ 维）。根据$\Lambda$ 中特征值得大小从$E^T$ 中删去特征值较小的维度保留特征值较大的维度从而构成新的基矩阵$P$ ,因此在$P$ 应当少于$m$ 行，减少维度从而达到降维的效果。</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+Y &= PX \\
+&= \left[\begin{matrix}
+c_{11} & c_{12} & \dots & c_{1m} \\
+c_{21} & c_{22} & \dots & c_{2m} \\
+\vdots & \vdots & \ddots & \vdots \\
+c_{k1} & c_{k2} & \dots & c_{km} \\
+\end{matrix}
+\right]_{k \times m}
+\times
+\left[
+\begin{matrix}
+a_{11} & a_{12} & \dots & a_{1n} \\
+a_{21} & a_{22} & \dots & a_{2n} \\
+\vdots  & \vdots  & \ddots & \vdots \\
+a_{m1} & a_{m2} & \dots & a_{mn} \\
+\end{matrix}
+\right]_{m \times k} \\
+& =
+\left[
+\begin{matrix}
+d_{11} & d_{12} & \dots & d_{1n} \\
+d_{21} & d_{22} & \dots & d_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+d_{k1} & d_{k2} & \dots & d_{kn} \\
+\end{matrix}
+\right]_{k \times n} \\
+\end{align*} \tag{12}</script><p>由式$(12)$ 可以看到，降维数据$Y$ 由原数据$X$ 的$m$ 维降低至$k$ 维$(k&lt;m)$ 。 </p>
+<h2 id="4-计算特征值与特征向量"><a href="#4-计算特征值与特征向量" class="headerlink" title="4. 计算特征值与特征向量"></a>4. 计算特征值与特征向量</h2><p>通常来讲图像的维数是非常高的，比如一张 256×256 分辨率的图像拥有 65536 个维度。而图像样本的数量通常则远远维度数。所以对于原数据$X$ 的协方差矩阵$C$ 是非常大的。例如 20 张 256×256 的样本，那么$X$ 的大小为 65536×20，其协方差矩阵的大小为 65536×65536。</p>
+<p>对于矩阵相乘我们已知：</p>
+<script type="math/tex; mode=display">
+r(AB)\leqslant min \{ r(A),r(B) \}</script><p>因此协方差矩阵$C$ 的秩 $r(C) \leqslant n(n为样本数)$ 一遍来讲$r(C) = n$ 。由于$C$ 是实对称矩阵且相似于对角矩阵，故$C$ 的秩就等于其非零特征值的个数，也就意味值当样本数量远远小于维数时，其协方差矩阵的特征值大多数是为 0 的。</p>
+<p>因此考虑矩阵$H$ ：</p>
+<script type="math/tex; mode=display">
+H=\frac{1}{m}X^TX \tag{13}</script><p>$H$ 的大小为$n×n(n为样本数)$ ，其大小远远小于$m×m(m为维数)$ 。现在对$H$ 进行特征分解，其特征值和特征向量可以表示为： $H\alpha_i=\lambda_i\alpha_i$ 。考虑下列等式：</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+H\alpha_i &= \lambda_i\alpha_i \\
+X^TX\alpha_i &= \lambda_i\alpha_i \\
+XX^T(X\alpha_i) &= \lambda_i(X\alpha_i) \\
+C(X\alpha_i) &= \lambda_i(X\alpha_i)
+\end{align*} \tag{14}</script><p>由式$(14)$ 可知，若 $\lambda_i$ 和 $\alpha_i$ 是矩阵$H$ 的特征值和特征向量，那么若 $\lambda_i$ 和 $X\alpha_i$ 也是协方差矩阵$C$ 的非零特征值和其对应的特征向量。这样就可以求出$C$ 所有的非零特征值和其对应的向量。在 PCA 中就可以根据这些非零特征值进行筛选主成分了。通过矩阵$H$ 可以极大的减少所需的计算量。</p>
+<h2 id="5-人脸识别过程"><a href="#5-人脸识别过程" class="headerlink" title="5. 人脸识别过程"></a>5. 人脸识别过程</h2><p>到目前为止，我们就可以将人脸图像的样本数据进行降维处理得到由特征脸$b_i$ 组成的特征集$Y$ 。</p>
+<script type="math/tex; mode=display">
+\begin{align*}
+Y &=  [b_1, b_2, \dots, b_n]\\ \\
+&= \left[ 
+\begin{matrix}
+b_{11} & b_{12} & \dots & b_{1n} \\
+b_{21} & b_{22} & \dots & b_{2n} \\
+\vdots  & \vdots  & \ddots & \vdots \\
+b_{k1} & b_{k2} & \dots & b_{kn} \\
+\end{matrix} 
+\right] \tag{15}
+\end{align*}</script><p>对与一张新的图像，可以表示成一个$1×n$ 大小的向量$v$ 。首先将其投影到降维空间也就是用矩阵$P$ 去乘以向量$v$ ,从而得到向量$u$ 。</p>
+<script type="math/tex; mode=display">
+u=P \times v \tag{16}</script><p>再通过分别计算向量$u$ 当每一个特征脸$b<em>i$ 的欧氏距离，取欧氏距离最短的特征脸$b\</em>{min}$ 所对应的样本即为本次所识别的结果。</p>
+<h2 id="6-代码"><a href="#6-代码" class="headerlink" title="6. 代码"></a>6. 代码</h2><p>源代码参考自互联网$^{[1]}$,增加了些许调整和注释并使用automake进行构建。当前程序识别精确度有限，若使用分类器代替简单的欧氏距离判断则可提高识别精确度。</p>
+<p>代码编译：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$&gt; cd build &amp;&amp; ../src/configure &amp;&amp; make</span><br></pre></td></tr></table></figure>
+<p>代码运行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$&gt; ./pcafacerecog -a &lt;存放训练图像的目录&gt; -e &lt;存放测试图像的目录&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="7-参考资料"><a href="#7-参考资料" class="headerlink" title="7. 参考资料"></a>7. 参考资料</h2><ol>
+<li><a target="_blank" rel="noopener" href="http://blog.csdn.net/jinshengtao/article/details/18599165">PCA人脸识别学习及C语言实现，http://blog.csdn.net/jinshengtao/article/details/18599165</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.csdn.net/yutianzuijin/article/details/10823985">基于PCA的人脸识别步骤，http://blog.csdn.net/yutianzuijin/article/details/10823985</a></li>
+<li><a target="_blank" rel="noopener" href="http://blog.codinglabs.org/articles/pca-tutorial.html">PCA的数学原理，http://blog.codinglabs.org/articles/pca-tutorial.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/chaosimple/p/3182157.html">浅谈协方差矩阵，https://www.cnblogs.com/chaosimple/p/3182157.html</a></li>
+</ol>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">1. 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%9F%A9%E9%98%B5%E4%B9%98%E6%B3%95%E7%9A%84%E5%87%A0%E4%BD%95%E5%90%AB%E4%B9%89"><span class="toc-number">2.</span> <span class="toc-text">2. 矩阵乘法的几何含义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-PCA%E9%99%8D%E7%BB%B4%E7%9A%84%E6%95%B0%E5%AD%A6%E8%BF%90%E7%AE%97%E8%BF%87%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">3. PCA降维的数学运算过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%AE%A1%E7%AE%97%E7%89%B9%E5%BE%81%E5%80%BC%E4%B8%8E%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F"><span class="toc-number">4.</span> <span class="toc-text">4. 计算特征值与特征向量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB%E8%BF%87%E7%A8%8B"><span class="toc-number">5.</span> <span class="toc-text">5. 人脸识别过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BB%A3%E7%A0%81"><span class="toc-number">6.</span> <span class="toc-text">6. 代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">7.</span> <span class="toc-text">7. 参考资料</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2018/01/30/pca_face_recognition/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&text=PCA 人脸识别"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&title=PCA 人脸识别"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&is_video=false&description=PCA 人脸识别"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=PCA 人脸识别&body=Check out this article: https://panderan.github.io/2018/01/30/pca_face_recognition/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&title=PCA 人脸识别"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&title=PCA 人脸识别"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&title=PCA 人脸识别"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&title=PCA 人脸识别"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2018/01/30/pca_face_recognition/&name=PCA 人脸识别&description=&lt;p&gt;基于主成分分析（PCA）人脸识别的分析与实现。首先讨论了矩阵乘法的含义，接着尝试推导了主成分的计算过程，并最终将其应用于人脸图像，在多维空间中采用欧氏距离比较人脸数据。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2018/01/30/pca_face_recognition/&t=PCA 人脸识别"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2022
+    Deran Pan
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

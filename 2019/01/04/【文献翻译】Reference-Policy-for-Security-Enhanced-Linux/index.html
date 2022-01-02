@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="原文 Reference Policy for Security Enhanced Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【文献翻译】 Reference Policy for Security Enhanced Linux">
+<meta property="og:url" content="https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/index.html">
+<meta property="og:site_name" content="Deran Pan&#39;s Pages">
+<meta property="og:description" content="原文 Reference Policy for Security Enhanced Linux">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-01-04T13:54:23.000Z">
+<meta property="article:modified_time" content="2022-01-01T14:07:40.347Z">
+<meta property="article:author" content="Deran Pan">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>【文献翻译】 Reference Policy for Security Enhanced Linux</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2019/01/17/haskell_coding_debug/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2018/12/29/docker_technology-using-linux-namespaces/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&text=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&title=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&is_video=false&description=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=【文献翻译】 Reference Policy for Security Enhanced Linux&body=Check out this article: https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&title=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&title=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&title=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&title=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&name=【文献翻译】 Reference Policy for Security Enhanced Linux&description=&lt;p&gt;&lt;a href=&#34;http://selinuxsymposium.org/2006/papers/05-refpol.pdf&#34;&gt;原文 Reference Policy for Security Enhanced Linux&lt;/a&gt;&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&t=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Motivations"><span class="toc-number">1.</span> <span class="toc-text">1. Motivations</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Reference-Policy-Goals"><span class="toc-number">2.</span> <span class="toc-text">2. Reference Policy Goals</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-Security-Goals"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 Security Goals</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-Functional-Goals"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 Functional Goals</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Concept%EF%BC%8CRules%EF%BC%8Cand-Conventions"><span class="toc-number">3.</span> <span class="toc-text">3. Concept，Rules，and Conventions</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Design-Concepts"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 Design Concepts</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-1-Layering"><span class="toc-number">3.1.1.</span> <span class="toc-text">3.1.1 Layering</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-2-Modularity"><span class="toc-number">3.1.2.</span> <span class="toc-text">3.1.2 Modularity</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-3-Encapsulation-and-Abstraction"><span class="toc-number">3.1.3.</span> <span class="toc-text">3.1.3 Encapsulation and Abstraction</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-4-Module-Interfaces"><span class="toc-number">3.1.4.</span> <span class="toc-text">3.1.4 Module Interfaces</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-5-Module-Template-Interface"><span class="toc-number">3.1.5.</span> <span class="toc-text">3.1.5 Module Template Interface</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Module-Example"><span class="toc-number">4.</span> <span class="toc-text">4. Module Example</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-bind-te"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 bind.te</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        【文献翻译】 Reference Policy for Security Enhanced Linux
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deran Pan</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-01-04T13:54:23.000Z" itemprop="datePublished">2019-01-04</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E7%BF%BB%E8%AF%91/">翻译</a> › <a class="category-link" href="/categories/%E7%BF%BB%E8%AF%91/linux/">linux</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p><a target="_blank" rel="noopener" href="http://selinuxsymposium.org/2006/papers/05-refpol.pdf">原文 Reference Policy for Security Enhanced Linux</a></p>
+<span id="more"></span>
+<h2 id="1-Motivations"><a href="#1-Motivations" class="headerlink" title="1. Motivations"></a>1. Motivations</h2><p>在用 SELinux 中的策略表述对应用程序的安全目的时，有一个强大的基础是十分重要的。由原来 NSA 策略发展而来的策略都有难以理解、开发和维护的问题，除非对 SELinux 的机制和策略都十分的熟悉。在示例策略中，源文件结构松散且策略模块非常藕合。为了创建一个新的应用程序基本策略必须了解全部的策略模块或其绝大部分。创建一个第三方模块也是非常困难的，因为其需要了解 type, role, user, attributes 等等的定义进行深入的了解。但是当下使用最多的策略依然是基于 NSA 策略的。对 SELinux 来说，编写策略过于困难和复杂依然是被抱怨最多的问题。</p>
+<p>Tresys 根据社区在发展 NSA 策略获得经验开始了 Reference Policy 项目。它展现出了很多现代软件工程的很多优势和特性，因此这也使得其更易于维护，检验和使用。</p>
+<h2 id="2-Reference-Policy-Goals"><a href="#2-Reference-Policy-Goals" class="headerlink" title="2. Reference Policy Goals"></a>2. Reference Policy Goals</h2><p>Reference Policy 有两个主要的目标：</p>
+<ul>
+<li><p>安全：为了能够达到 SELinux 和 应用程序的安全目的提供一个更好的基础。</p>
+</li>
+<li><p>功能性：提供一个更好的基于软件工程方法的结构来组织策略源文件，使其更易于维护，添加策略更加简单并且可以构建高层的应用工具，例如基于图形的策略编辑器。</p>
+</li>
+</ul>
+<h3 id="2-1-Security-Goals"><a href="#2-1-Security-Goals" class="headerlink" title="2.1 Security Goals"></a>2.1 Security Goals</h3><p>为了安全是使用 SELinux 的主要原因，因此这也是 Reference Policy 的主要目的。通常，查看一个系统的安全性时，只有安全和不安全两种状态。但实际上这远远不够，不同的系统有不同的用处，同样就应该有着不同的安全评判方法。SELinux 的一个重要特性就是使用 type 并作为其强制访问控制机制，该机制允许策略编写者指定所需的安全属性。</p>
+<p>Reference Policy 有四个安全目标，通常这些也是大多数 SELinux 的目标。</p>
+<ul>
+<li>自我保护：保护系统自身，如 SELinux 策略和 每一个应用程序（不受其他程序威胁）；</li>
+<li>保证：在整个策略开发生命周期中，信任所有的 SELinux 策略模块的正确性和完整性。包括广泛使用最小特权和限制错误传播，以及增强可理解性;</li>
+<li>安全可扩展性：当维护其他安全目标和保证时，允许指定的程序和服务被添加进 SELinux 策略。</li>
+<li>改进的角色分离：通过最小权限和详细的角色定义来改进当前 SELinux 策略的缺点。</li>
+</ul>
+<p>到目前为止，我们已经在这些所有的安全目标上取得了重大进展，除了最后一个改进的角色分离，这是未来的工作计划。</p>
+<h3 id="2-2-Functional-Goals"><a href="#2-2-Functional-Goals" class="headerlink" title="2.2 Functional Goals"></a>2.2 Functional Goals</h3><p>在开发 SELinux 策略中会面对一些难以处理的问题，而这些是 Reference Policy 准备处理的，包括：</p>
+<ul>
+<li>管理复杂性：减少编写策略时必须管理详细信息的数量，简化创建新策略模块的过程，并且无需深入了解底层策略的实现；</li>
+<li>可加载模块支持：支持已存在的整体策略和兼容可加载策略模块的基础的策略，它们可以构建于同一份源文件。</li>
+<li>对工具的更友好的支持：对策略进行结构化，使复杂的策略开发和分析工具能够更容易地与策略源一起工作;</li>
+<li>第三方支持：允许第三方使用稳定的、定义良好的接口创建策略模块;</li>
+<li>便于理解：允许策略编写人员通过积极的添加文档使得策略更易于理解，能够做出与安全性相关的决策。</li>
+<li>策略配置：使用 MLS 和最近添加的 MCS 配置作为构建选项可以支持严格且有针对性的策略，不需要对策略或多个策略源树进行破坏性更改。</li>
+</ul>
+<h2 id="3-Concept，Rules，and-Conventions"><a href="#3-Concept，Rules，and-Conventions" class="headerlink" title="3. Concept，Rules，and Conventions"></a>3. Concept，Rules，and Conventions</h2><p>为了达到目的，Reference Policy 介绍并形式化了一些的新的概念。还为策略模块的构造使用强制规则，以帮助确保这些概念得到执行。</p>
+<h3 id="3-1-Design-Concepts"><a href="#3-1-Design-Concepts" class="headerlink" title="3.1 Design Concepts"></a>3.1 Design Concepts</h3><p>通过借鉴现代软件工程，这里定义了一些列的概念用来指导 Reference Policy项目。</p>
+<h4 id="3-1-1-Layering"><a href="#3-1-1-Layering" class="headerlink" title="3.1.1 Layering"></a>3.1.1 Layering</h4><p>Reference Policy 中的 Layering（分层）是一个相当弱的原则，主要用于帮助组织模块和简化用户理解。一个模块属于哪一层的决定因素有时是模糊的。一般来说，模块在系统中是按功能分组的。较底层的模块通常被包含在大多数系统策略中，例如，保护内核资源或启动/关闭系统。较高层次的模块更趋向于可选的，按需使用的。例如对于用户应用程序或基于网络的服务。当前定义的层次有：kernel、system、administrator、services，和 application。</p>
+<h4 id="3-1-2-Modularity"><a href="#3-1-2-Modularity" class="headerlink" title="3.1.2 Modularity"></a>3.1.2 Modularity</h4><p>模块是 Reference Policy 中最小的组件，将于对特定域及其资源的相关策略语句合为一组。划分组主要是基于功能的相似性。每一个模块都包含策略资源声明（例如：type，attribute），相关的策略规则，和具体的对象标签需求。这种形式的模块构成了封装和抽象策略语句的基础，我们将在下面进一步讨论这些策略语句。每一个模块都与 Red Hat 系统的 RPMs 一样，可是选择是否安装来减轻系统配置。</p>
+<p>现有的示例策略已经发展成一种有助于管理复杂性的模块化形式。但是一般来说，模块仍然是紧密耦合的。在 Reference Policy 中模块的组织和定义上将更加的严格，并将一些强制规则作为惯例。</p>
+<p>每一个模块都有三个源文件：</p>
+<ul>
+<li>一个私有模块策略：包含模块本地的声明和规则；</li>
+<li>一组外部接口：为了能能够被其他模块使用，提供了访问私有模块策略的类型和属性的抽象。这些接口应该被设计成直观的，反映了对某些系统功能的访问。策略开发人员应该能够使用接口，了解其用途，而不必了解如何在模块中实现该用途。</li>
+<li>一个文件标签策略；文件标签策略文件由与模块关联的文件上下文语句（如果有的话）组成。</li>
+</ul>
+<h4 id="3-1-3-Encapsulation-and-Abstraction"><a href="#3-1-3-Encapsulation-and-Abstraction" class="headerlink" title="3.1.3 Encapsulation and Abstraction"></a>3.1.3 Encapsulation and Abstraction</h4><p>模块的封装规则确保模块的所有实现细节对模块本身是私有的。允许在不影响其他策略模块的情况下更改模块的实现，从而减少了策略模块的耦合。</p>
+<p>Reference Policy 有几个重要的策略书写规则，用以维持封装和抽象的重要概念。<strong>类型和属性应当是模块的私有数据</strong>。因此，在声明类型和属性的模块之外，类型和属性可能不会直接由名称引用。这也意味着<strong>不存在全局类型或属性</strong>。</p>
+<p>抽象用于创建更高级别的访问概念。这使得策略编写者能够做出与安全相关的决策，而不是被理解所有实现细节所阻碍。M4 宏用于创建抽象，不过通常我们对所允许的宏类型执行严格的约定，而不像当前的实践允许M4支持的任何形式的宏。每个宏只包含一个概念，并且规则不是为了方便而添加的。</p>
+<p>Reference Policy 支持三种类型的宏：</p>
+<ol>
+<li><strong>interface</strong></li>
+</ol>
+<p>Interface 宏是那些访问对模块内部类型和转换类型的宏。例如，使一个调用者的类型为“domain”。Interface 是 Reference Policy 主要的创新之一，提供大部分模块实现的解耦。</p>
+<ol>
+<li><strong>template</strong></li>
+</ol>
+<p>模板宏是一种特殊形式的 Interface，它代表调用者创建和操作派生类型。虽然派生类型在概念上对调用者是私有的，但是它们的实现细节完全包含在创建 template 宏的模块中。例如，使用这些宏创建 ssh 域的类型和规则以及每个角色的键。</p>
+<ol>
+<li><strong>support</strong></li>
+</ol>
+<p>support 宏与 NSA 示例策略中的许多“核心宏”处于并行，提供公共策略模式。示例包括域转换和对象类权限集。支持宏本质上是“辅助函数”，仅用于帮助简化模块的私有内部实现。</p>
+<h4 id="3-1-4-Module-Interfaces"><a href="#3-1-4-Module-Interfaces" class="headerlink" title="3.1.4 Module Interfaces"></a>3.1.4 Module Interfaces</h4><p>当前结构最根本的改变时在模块外部获取定义在模块内部的访问权限类型。Interface 提供了访问模块内部策略资源的能力。所有的域需要获取特定的权限都将使用同样的接口。因此策略规则要求接的访问要在所有用户中一致。因此，策略的访问类型更改只需要在一个地方进行更改，而不像样例策略中常见的那样需要更改使用该类型的所有模块。</p>
+<p>将来，向基础语言中添加接口和模板宏语义可能是有意义的。作为宏，任何时候修改接口，使用该接口的所有模块都必须重新编译。通过语言中的接口，模块将在可加载模块级别和源级别上解耦。</p>
+<p>更进一步说明，接口需要遵循清晰的命名约定。特别是模块名，或其是接口名前缀的简称。这允许策略编写人员查看策略，并轻松地查看所有接口调用的位置。此外，需要用一致动词用于描述访问，如读、写和删除。</p>
+<p>每个接口包含两个部分，依赖项和访问。依赖项包含在 gen_require() 宏中。此宏包含将放置在可加载模块的 require 块中的语句。它列出接口使用的所有类型和属性。如果使用用户空间对象管理器的对象类，如 DBUS 或 NSCD，则还必须列出对象类和所需的权限。</p>
+<h4 id="3-1-5-Module-Template-Interface"><a href="#3-1-5-Module-Template-Interface" class="headerlink" title="3.1.5 Module Template Interface"></a>3.1.5 Module Template Interface</h4><p>模板宏是唯一可以将类型和属性声明为接口的一部分的宏，所谓的派生类型。定义模板宏的模块是惟一可以定义对派生类型的显式访问的地方。接口和模板宏之间唯一真正的区别是模板宏代表了调用者来的使用和创建派生类型。这两个宏都是定义模块的“接口”，可以访问模块的私有类型。</p>
+<h2 id="4-Module-Example"><a href="#4-Module-Example" class="headerlink" title="4. Module Example"></a>4. Module Example</h2><p>下面是来自 BIND DNS 服务器的 Reference Policy 的摘录。</p>
+<h3 id="4-1-bind-te"><a href="#4-1-bind-te" class="headerlink" title="4.1 bind.te"></a>4.1 bind.te</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">policy_module(bind,1.1.0)  </span><br><span class="line"></span><br><span class="line">type named_t; </span><br><span class="line">type named_exec_t; </span><br><span class="line">init_daemon_domain(named_t,named_exec_t) </span><br><span class="line"></span><br><span class="line">type named_cache_t; </span><br><span class="line">files_type(named_cache_t) </span><br><span class="line"></span><br><span class="line">type named_conf_t; </span><br><span class="line">files_type(named_conf_t) </span><br><span class="line"></span><br><span class="line">type named_zone_t; </span><br><span class="line">files_type(named_zone_t) </span><br><span class="line"></span><br><span class="line">allow named_t named_cache_t:file manage_file_perms; </span><br><span class="line">allow named_t named_conf_t:file 08| r_file_perms; </span><br><span class="line">allow named_t named_zone_t:file r_file_perms; </span><br><span class="line"></span><br><span class="line">kernel_read_system_state(named_t) </span><br><span class="line">kernel_read_network_state(named_t) </span><br><span class="line"></span><br><span class="line">corenet_non_ipsec_sendrecv(named_t) </span><br><span class="line">corenet_udp_sendrecv_all_if(named_t) </span><br><span class="line">corenet_udp_sendrecv_all_nodes(named_t) </span><br><span class="line">corenet_udp_sendrecv_all_ports(named_t) </span><br><span class="line">corenet_udp_bind_all_nodes(named_t) </span><br><span class="line">corenet_udp_bind_dns_port(named_t) </span><br><span class="line">logging_send_syslog_msg(named_t) </span><br></pre></td></tr></table></figure>
+<p>bind.te 显示了完整的名为 domain 的完整私有策略。 policy_module() 宏包含了模块名称和版本的信息，这些信息用于可载入的策略模块。接下来的 9 行包含 type 声明和变换宏。domain 的 type 和它的入口函数通过 init_daemon_domain() 宏声明和转换，这个宏是该模块的初始化接口。剩下的私有策略包含对于 BIND Server 的规则。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Motivations"><span class="toc-number">1.</span> <span class="toc-text">1. Motivations</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Reference-Policy-Goals"><span class="toc-number">2.</span> <span class="toc-text">2. Reference Policy Goals</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-Security-Goals"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 Security Goals</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-Functional-Goals"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 Functional Goals</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Concept%EF%BC%8CRules%EF%BC%8Cand-Conventions"><span class="toc-number">3.</span> <span class="toc-text">3. Concept，Rules，and Conventions</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Design-Concepts"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 Design Concepts</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-1-Layering"><span class="toc-number">3.1.1.</span> <span class="toc-text">3.1.1 Layering</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-2-Modularity"><span class="toc-number">3.1.2.</span> <span class="toc-text">3.1.2 Modularity</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-3-Encapsulation-and-Abstraction"><span class="toc-number">3.1.3.</span> <span class="toc-text">3.1.3 Encapsulation and Abstraction</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-4-Module-Interfaces"><span class="toc-number">3.1.4.</span> <span class="toc-text">3.1.4 Module Interfaces</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-1-5-Module-Template-Interface"><span class="toc-number">3.1.5.</span> <span class="toc-text">3.1.5 Module Template Interface</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Module-Example"><span class="toc-number">4.</span> <span class="toc-text">4. Module Example</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-bind-te"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 bind.te</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&text=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&title=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&is_video=false&description=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=【文献翻译】 Reference Policy for Security Enhanced Linux&body=Check out this article: https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&title=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&title=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&title=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&title=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&name=【文献翻译】 Reference Policy for Security Enhanced Linux&description=&lt;p&gt;&lt;a href=&#34;http://selinuxsymposium.org/2006/papers/05-refpol.pdf&#34;&gt;原文 Reference Policy for Security Enhanced Linux&lt;/a&gt;&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2019/01/04/%E3%80%90%E6%96%87%E7%8C%AE%E7%BF%BB%E8%AF%91%E3%80%91Reference-Policy-for-Security-Enhanced-Linux/&t=【文献翻译】 Reference Policy for Security Enhanced Linux"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2022
+    Deran Pan
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

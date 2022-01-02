@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Cygwin 是一套在 Windows 平台上运行的类 Unix 模拟环境。通过 Cygwin 可以将一些开源程序编译到 Windows 中运行。与 Cygwin 类似还有一套工具叫做 MinGW，不过现在 Cygwin 已经可以包含 MinGW 了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在 Cygwin 跨平台编译 GTK+ 程序">
+<meta property="og:url" content="https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/index.html">
+<meta property="og:site_name" content="Deran Pan&#39;s Pages">
+<meta property="og:description" content="Cygwin 是一套在 Windows 平台上运行的类 Unix 模拟环境。通过 Cygwin 可以将一些开源程序编译到 Windows 中运行。与 Cygwin 类似还有一套工具叫做 MinGW，不过现在 Cygwin 已经可以包含 MinGW 了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/blg-001-1.PNG">
+<meta property="og:image" content="https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/blg-001-2.PNG">
+<meta property="og:image" content="https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/blg-001-3.PNG">
+<meta property="article:published_time" content="2017-09-17T08:53:37.000Z">
+<meta property="article:modified_time" content="2022-01-01T14:07:40.347Z">
+<meta property="article:author" content="Deran Pan">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/blg-001-1.PNG">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>在 Cygwin 跨平台编译 GTK+ 程序</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2017/09/28/the_comment_format_of_c_style_in_doxygen/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2017/08/08/office2013_gui_blured_in_the_extension_screen/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&text=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&title=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&is_video=false&description=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=在 Cygwin 跨平台编译 GTK+ 程序&body=Check out this article: https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&title=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&title=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&title=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&title=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&name=在 Cygwin 跨平台编译 GTK+ 程序&description=&lt;p&gt;Cygwin 是一套在 Windows 平台上运行的类 Unix 模拟环境。通过 Cygwin 可以将一些开源程序编译到 Windows 中运行。与 Cygwin 类似还有一套工具叫做 MinGW，不过现在 Cygwin 已经可以包含 MinGW 了。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&t=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%AE%89%E8%A3%85-MinGW-%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">一、安装 MinGW 环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%BC%96%E8%AF%91GTK%E7%A8%8B%E5%BA%8F"><span class="toc-number">2.</span> <span class="toc-text">二、编译GTK程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">3.</span> <span class="toc-text">三、运行环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%B7%BB%E5%8A%A0%E7%B3%BB%E7%BB%9F%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">3.1.</span> <span class="toc-text">1. 添加系统环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%8B%AC%E7%AB%8B%E6%8A%BD%E5%8F%96dll"><span class="toc-number">3.2.</span> <span class="toc-text">2. 独立抽取dll</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%B3%A8%E6%84%8F"><span class="toc-number">4.</span> <span class="toc-text">四、注意</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        在 Cygwin 跨平台编译 GTK+ 程序
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deran Pan</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-09-17T08:53:37.000Z" itemprop="datePublished">2017-09-17</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E4%B8%8E%E7%BC%96%E8%AF%91/">软件安装与编译</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>Cygwin 是一套在 Windows 平台上运行的类 Unix 模拟环境。通过 Cygwin 可以将一些开源程序编译到 Windows 中运行。与 Cygwin 类似还有一套工具叫做 MinGW，不过现在 Cygwin 已经可以包含 MinGW 了。</p>
+<span id="more"></span>
+<p>由于 Cygwin 是模拟类 Unix 环境。所以在其中编译的程序依然无法脱离 Cygwin 环境而运行，也就是说你不能直接从 Windows 中通过双击来运行。但是 MinGW 可以生成原生 Windows 程序而不需要第三运行时，即你可以从 Windows 的资源管理器中直接双击运行。</p>
+<p>对于拥有 GUI 的跨平台程序在 Cygwin 中编译运行需要安装 Cygwin/X 。但在这里要介绍的主要是在 Cygwin 中通过 MinGW 编译程序，故 Cygwin/X 的使用不做说明。</p>
+<h2 id="一、安装-MinGW-环境"><a href="#一、安装-MinGW-环境" class="headerlink" title="一、安装 MinGW 环境"></a>一、安装 MinGW 环境</h2><p>MinGW-x86_64 通过 MSYS2 也可以安装并且 MSYS2 支持 pacman 包管理程序。但是这里主要介绍的是在 Cygwin 中安装。确保已经安装里基本的 Cygwin 环境，当然你也可以一次安装。打开 Cygwin 管理器，并勾选以下程序包：<img src="/2017/09/17/compile_gtk_prog_under_cygwin/blg-001-1.PNG" class="" alt="1.1"></p>
+<ul>
+<li><p>mingw64-x86_64-gcc-core</p>
+</li>
+<li><p>mingw64-x86_64-gcc-g++</p>
+</li>
+<li><p>mingw64-x86_64-glib2.0</p>
+</li>
+<li><p>mingw64-x86_64-gtk3</p>
+</li>
+<li><p>mingw64-x86_64-pkg-config</p>
+</li>
+<li><p>mingw64-x86_64-adwaita-icon-theme</p>
+</li>
+</ul>
+<p>勾选这6个包安装时会自动安装所有依赖包。安装好之后 MinGW64 的编译环境就安装好了。</p>
+<h2 id="二、编译GTK程序"><a href="#二、编译GTK程序" class="headerlink" title="二、编译GTK程序"></a>二、编译GTK程序</h2><p>通过以下命令编译 GTK+ 程序即可，务必使用 x86_64-w64-mingw32-gcc 和 x86_64-w64-mingw32-pkg-config 而不要使用 gcc 和 pkg-config 程序，这两个程序是 cygwin 的。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ x86_64-w64-mingw32-gcc &lt;source files&gt; `x86_64-w64-mingw32-pkg-config --cflags --libs gtk+-3.0`</span><br></pre></td></tr></table></figure>
+  <img src="/2017/09/17/compile_gtk_prog_under_cygwin/blg-001-2.PNG" class="" alt="1.2">
+<h2 id="三、运行环境"><a href="#三、运行环境" class="headerlink" title="三、运行环境"></a>三、运行环境</h2><h3 id="1-添加系统环境变量"><a href="#1-添加系统环境变量" class="headerlink" title="1. 添加系统环境变量"></a>1. 添加系统环境变量</h3><p>将 \<Cygwin安装路径\>\usr\x86_64-w64-mingw32\sys-root\mingw\bin 添加的系统环境变量中就可以直接从 Windows 中双击运行了。</p>
+<h3 id="2-独立抽取dll"><a href="#2-独立抽取dll" class="headerlink" title="2. 独立抽取dll"></a>2. 独立抽取dll</h3><p>运行所需的 DLL 都在上述添加到系统环境的路径中，只需将所需 DLL 复制出来放到和应用程序同一目录下即可不用修改系统环境变量运行 GTK  程序。GTK 所需 DLL 如下所示：<br>etc、libcairo-gobject-2.dll、libgdk_pixbuf-2.0-0.dll、libharfbuzz-0.dll、libpixman-1-0.dll、libepoxy-0.dll、libgdk-3-0.dll、libintl-8.dll、libpng16-16.dll、iconv.dll、libexpat-1.dll、libgio-2.0-0.dll、libpango-1.0-0.dll、libwinpthread-1.dll、lib、libffi-6.dll、libglib-2.0-0.dll、libpangocairo-1.0-0.dll、share、libatk-1.0-0.dll、libfontconfig-1.dll、libgmodule-2.0-0.dll、libpangoft2-1.0-0.dll、zlib1.dll、libbz2-1.dll、libfreetype-6.dll、libgobject-2.0-0.dll、libpangowin32-1.0-0.dll、libcairo-2.dll、libgcc_s_seh-1.dll、libgtk-3-0.dll、libpcre-1.dll</p>
+<p>其中 etc 、lib、share为目录文件。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">➜  FuncPlotter find etc                                          # settings 配置文件</span><br><span class="line">etc</span><br><span class="line">etc/gtk-3.0</span><br><span class="line">etc/gtk-3.0/settings.ini</span><br><span class="line">➜  FuncPlotter find lib</span><br><span class="line">lib                                                              # pixbuf cache 文件</span><br><span class="line">lib/gdk-pixbuf-2.0</span><br><span class="line">lib/gdk-pixbuf-2.0/2.10.0</span><br><span class="line">lib/gdk-pixbuf-2.0/2.10.0/loaders.cache</span><br><span class="line">➜  FuncPlotter find share                                        # 图标</span><br><span class="line">share</span><br><span class="line">share/icons</span><br><span class="line">share/icons/Adwaita</span><br><span class="line">share/icons/Adwaita/16x16</span><br><span class="line">share/icons/Adwaita/16x16/actions</span><br><span class="line">share/icons/Adwaita/16x16/actions/action-unavailable-symbolic.symbolic.png</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+<p>没有这三个目录也可以运行程序，问题不大。</p>
+<img src="/2017/09/17/compile_gtk_prog_under_cygwin/blg-001-3.PNG" class="" alt="1.3">
+<h2 id="四、注意"><a href="#四、注意" class="headerlink" title="四、注意"></a>四、注意</h2><p>zlib1.dll 是被 libpng.dll 所依赖，故 gtk 程序在没有zlib1.dll 文件时不会提示缺少 zlib1.dll。而会提示  ＂无法定位程序输入点 inflateReset2 于动态链接库 libpng16-16.dll＂错误。（google了好久才发现T_T）</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%AE%89%E8%A3%85-MinGW-%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">一、安装 MinGW 环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%BC%96%E8%AF%91GTK%E7%A8%8B%E5%BA%8F"><span class="toc-number">2.</span> <span class="toc-text">二、编译GTK程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83"><span class="toc-number">3.</span> <span class="toc-text">三、运行环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%B7%BB%E5%8A%A0%E7%B3%BB%E7%BB%9F%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">3.1.</span> <span class="toc-text">1. 添加系统环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%8B%AC%E7%AB%8B%E6%8A%BD%E5%8F%96dll"><span class="toc-number">3.2.</span> <span class="toc-text">2. 独立抽取dll</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E6%B3%A8%E6%84%8F"><span class="toc-number">4.</span> <span class="toc-text">四、注意</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&text=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&title=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&is_video=false&description=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=在 Cygwin 跨平台编译 GTK+ 程序&body=Check out this article: https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&title=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&title=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&title=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&title=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&name=在 Cygwin 跨平台编译 GTK+ 程序&description=&lt;p&gt;Cygwin 是一套在 Windows 平台上运行的类 Unix 模拟环境。通过 Cygwin 可以将一些开源程序编译到 Windows 中运行。与 Cygwin 类似还有一套工具叫做 MinGW，不过现在 Cygwin 已经可以包含 MinGW 了。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2017/09/17/compile_gtk_prog_under_cygwin/&t=在 Cygwin 跨平台编译 GTK+ 程序"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2022
+    Deran Pan
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

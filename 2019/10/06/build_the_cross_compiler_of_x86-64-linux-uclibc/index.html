@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="从源码构建交叉编译工具链－实践！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="编译工具链制作-x86_64-linux-uclibc">
+<meta property="og:url" content="https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/index.html">
+<meta property="og:site_name" content="Deran Pan&#39;s Pages">
+<meta property="og:description" content="从源码构建交叉编译工具链－实践！">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-10-06T07:40:42.000Z">
+<meta property="article:modified_time" content="2022-01-02T16:36:22.808Z">
+<meta property="article:author" content="Deran Pan">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>编译工具链制作-x86_64-linux-uclibc</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2020/02/13/introduction_to_color_space/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2019/06/30/%E3%80%90scikit-learn%E3%80%91%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81,%E8%AF%84%E4%BC%B0%E8%AF%84%E4%BC%B0%E5%99%A8%E7%9A%84%E6%80%A7%E8%83%BD%EF%BC%88%E4%B8%80%EF%BC%89/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&text=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&title=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&is_video=false&description=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=编译工具链制作-x86_64-linux-uclibc&body=Check out this article: https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&title=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&title=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&title=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&title=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&name=编译工具链制作-x86_64-linux-uclibc&description=&lt;p&gt;从源码构建交叉编译工具链－实践！&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&t=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">1 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="toc-number">2.</span> <span class="toc-text">2 背景知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E7%BC%96%E8%AF%91%E5%99%A8"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 编译器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-GNU-%E7%BC%96%E8%AF%91%E5%99%A8"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 GNU 编译器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%9E%84%E5%BB%BA%E8%BF%87%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">3 构建过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E8%AE%BE%E7%BD%AE%E6%9E%84%E5%BB%BA%E7%8E%AF%E5%A2%83%E4%BB%A5%E5%8F%8A%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 设置构建环境以及环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E9%85%8D%E7%BD%AE%EF%BC%8C%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 配置，编译和安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%B5%8B%E8%AF%95"><span class="toc-number">4.</span> <span class="toc-text">4 测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">5.</span> <span class="toc-text">5 参考资料</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        编译工具链制作-x86_64-linux-uclibc
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deran Pan</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-10-06T07:40:42.000Z" itemprop="datePublished">2019-10-06</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E4%B8%8E%E7%BC%96%E8%AF%91/">软件安装与编译</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>从源码构建交叉编译工具链－实践！</p>
+<span id="more"></span>
+<h2 id="1-简介"><a href="#1-简介" class="headerlink" title="1 简介"></a>1 简介</h2><p>尝试制作编译工具链，编译工具链的所采用的软件包如下：</p>
+<ul>
+<li>linux kernel : 2.6.32</li>
+<li>gcc : 4.8.0</li>
+<li>uclibc-ng : 1.0.11</li>
+</ul>
+<p>主机平台为 ubuntu 18.04.3，目标平台为 x86_64-linux-uclibc，过程同制作交叉编译工具链。</p>
+<h2 id="2-背景知识"><a href="#2-背景知识" class="headerlink" title="2 背景知识"></a>2 背景知识</h2><h3 id="2-1-编译器"><a href="#2-1-编译器" class="headerlink" title="2.1 编译器"></a>2.1 编译器</h3><p>编译器通常由多个部分所构成，它们的最终目的是生成能在目标平台运行的字节码。而大多数的编译器则可以划分为以下4个部分。</p>
+<ul>
+<li><strong>解析器</strong>（Parser），解析器将高级编程语言转换成汇编语言，例如将 C 语言程序转换为汇编语言。因此解析器必须了解目标平台的所支持的汇编命令。</li>
+<li><strong>汇编器</strong>（Assembler），汇编器将汇编语言转换成能够被目标平台CPU所能运行的字节码。</li>
+<li><strong>连接器</strong>（Linker），连接器能够将汇编器生成的多个对象文件，如 .o 文件，合并成一个可执行文件。由于不同的操作系统和 CPU 通常会使用不同的封装机制和标准，因此连接器需要知道目标平台的封装格式。</li>
+<li><strong>标准C库</strong>（Standard C library），标准C库提供核心的 C 语言函数，例如 printf。</li>
+</ul>
+<p>通常主机自己的编译器所产生的汇编代码、字节码和可执行程序的格式都遵守主机自身的平台标准。但对于交叉编译器，除了编译器自身可运行于主机平台，但其汇编语言标准、连接器格式、C库都遵守于目标平台。</p>
+<h3 id="2-2-GNU-编译器"><a href="#2-2-GNU-编译器" class="headerlink" title="2.2 GNU 编译器"></a>2.2 GNU 编译器</h3><p>GNU 编译器包含了 C 编译器，一组工具程序和 C 库。制作 GNU 编译工具链需要构建以下 3 个部分。</p>
+<ul>
+<li><p><strong>binutils</strong>：binutils 包含了一组基本的二进制实用程序，如汇编器（as），连接器（ld）和一些其他的工具如 size、strip等。这组工具包含了构建目标应用程序的核心组件以及目标平台的应用程序封装格式。例如 strip 应用程序可以从对象文件或目标应用程序中删除符号表、调试信息以及其他“无用”的信息。要完成这项工作 strip 命令就必须知道目标平台的相关格式，这样不会删除错误的信息。</p>
+<p><strong>gcc</strong>：gcc是编译过程的主要的部分。gcc 包含了 C 预处理器（c preprocessor, cpp) 和翻译器，翻译器主要将 C 代码转换成目标平台的汇编代码，同时 gcc 也控制着个编译过程，负责有序的调用预处理器，翻译器，汇编器以及连接器。</p>
+</li>
+<li><p><strong>glibc/newlib/uclibc</strong>：这些库都是标准 C 库的实现。uclibc 以及 newlib 适用于嵌入式操作系统。glibc 多用于桌面环境。</p>
+</li>
+</ul>
+<p>除了以上 3 个主要部分，还需要目标操作系统的一些头文件，如 linux。通过这些头文件可以访问操作系统相关的函数以及系统调用。</p>
+<h2 id="3-构建过程"><a href="#3-构建过程" class="headerlink" title="3 构建过程"></a>3 构建过程</h2><h3 id="3-1-设置构建环境以及环境变量"><a href="#3-1-设置构建环境以及环境变量" class="headerlink" title="3.1 设置构建环境以及环境变量"></a>3.1 设置构建环境以及环境变量</h3><p>首先创建构建目录 CCT，并下载以下源码包至 CCT/TarFiles目录下。</p>
+<ul>
+<li>binutils-2.26</li>
+<li>gcc-4.8.0</li>
+<li>gmp-4.3.2</li>
+<li>mpc-1.0.2</li>
+<li>mpfr-2.4.2</li>
+<li>linux-2.6.32.27</li>
+<li>uClibc-ng-1.0.11</li>
+</ul>
+<p>然后，并解压源码包。目录结构如下所示。<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CCT $ tree -L 1 ./</span><br><span class="line">./</span><br><span class="line">├── binutils-2.26</span><br><span class="line">├── gcc-4.8.0</span><br><span class="line">├── gmp-4.3.2</span><br><span class="line">├── linux-2.6.32.27</span><br><span class="line">├── mpc-1.0.2</span><br><span class="line">├── mpfr-2.4.2</span><br><span class="line">├── TarFiles</span><br><span class="line">└── uClibc-ng-1.0.11</span><br></pre></td></tr></table></figure><br>最后以下设置环境变量，安装位置为 /opt/cct。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">export ARCH=x86</span><br><span class="line">export TARGET=x86_64-linux-uclibc</span><br><span class="line">export PREFIX=/opt/cct</span><br><span class="line">export TARGET_PREFIX=$PREFIX/$TARGET</span><br><span class="line">export PATH=$PREFIX/bin:$PATH</span><br></pre></td></tr></table></figure>
+<h3 id="3-2-配置，编译和安装"><a href="#3-2-配置，编译和安装" class="headerlink" title="3.2 配置，编译和安装"></a>3.2 配置，编译和安装</h3><p><strong>第一遍构建 binutils</strong></p>
+<p>binutils 是第一个需要编译的分部，因为他所提供的汇编器、连接器等工具会在接下来编译的其他部分时所使用。使用如下命令进行软件包配置。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CCT $ cd binutils-2.26 &amp;&amp; mkdir -p $TARGET &amp;&amp; cd $TARGET</span><br><span class="line">x86_64-linux-uclibc $ CC=gcc-4.8 CXX=g++-4.8 ../configure \</span><br><span class="line">--prefix=$PREFIX \</span><br><span class="line">--with-lib-path=$PREFIX/lib:$PREFIX/lib64 \</span><br><span class="line">--disable-multilib \</span><br><span class="line">--disable-werror \</span><br><span class="line">--disable-nls \</span><br><span class="line">--target=$TARGET</span><br><span class="line">x86_64-linux-uclibc$ make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<ul>
+<li>—disable-multilib，由于只需要生成和编译64位的库程序，因此关闭 multilib 选项；</li>
+<li>—disable-nls，禁止国际化；</li>
+<li>—disable-werror，允许警告信息；</li>
+<li>—target，目标平台为 x86_64-linux-uclibc；</li>
+<li>—with-lib-path，指定该工具的库搜索路径；</li>
+</ul>
+<p>编译完成安装后，运行如下命令进行检查标准连接器的所搜路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ x86_64-linux-uclibc-ld --verbose | grep SEARCH</span><br><span class="line">SEARCH_DIR(&quot;/opt/cct/x86_64-linux-uclibc/lib64&quot;); SEARCH_DIR(&quot;/opt/cct/lib&quot;); SEARCH_DIR(&quot;/opt/cct/lib64&quot;); SEARCH_DIR(&quot;/opt/cct/x86_64-linux-uclibc/lib&quot;);</span><br></pre></td></tr></table></figure>
+<p><strong>安装内核头文件</strong></p>
+<p>编译器通过内核头文件可以知道目标平台和系统支持哪些系统调用。对于 Linux 来说可以从 kernel 源码中获得。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CCT $ cd linux-2.6.32.27</span><br><span class="line">linux-2.6.32.27 $ make ARCH=$ARCH INSTALL_HDR_PATH=$TARGET_PREFIX headers_install</span><br></pre></td></tr></table></figure>
+<p><strong>gcc 第一次编译</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">CCT $ cd gcc-4.8.0 </span><br><span class="line">gcc-4.8.0 $ ln -s ../gmp-4.3.2 gmp</span><br><span class="line">gcc-4.8.0 $ ln -s ../mpc-1.0.2 mpc</span><br><span class="line">gcc-4.8.0 $ ln -s ../mpfr-2.4.2 mpfr</span><br><span class="line">gcc-4.8.0 $ mkdir -p $TARGET &amp;&amp; cd $TARGET</span><br><span class="line">x86_64-linux-uclibc $ CC=gcc-4.8 CXX=g++-4.8 ../configure \</span><br><span class="line">--prefix=$PREFIX \</span><br><span class="line">--with-sysroot=$PREFIX \</span><br><span class="line">--with-local-prefix=$PREFIX \</span><br><span class="line">--with-native-system-header-dir=/$TARGET/include \</span><br><span class="line">--enable-languages=c,c++ \</span><br><span class="line">--enable-linker-build-id \</span><br><span class="line">--disable-multilib \</span><br><span class="line">--disable-werror \</span><br><span class="line">--without-headers \</span><br><span class="line">--with-newlib \</span><br><span class="line">--disable-shared \</span><br><span class="line">--disable-nls \</span><br><span class="line">--target=$TARGET</span><br><span class="line">x86_64-linux-uclibc $ make all-gcc</span><br><span class="line">x86_64-linux-uclibc $ make install-gcc</span><br></pre></td></tr></table></figure>
+<ul>
+<li>gmp、mpc 以及 mpfr 为 gcc 的依赖包。</li>
+<li>由于 gcc 是完全自包含的，因此使用 —with-sysroot 指向欲安装目录可以使得主机的 gcc 不会搜索根目录下的任何文件。—with-local-prefix 的默认值为 /usr/local，这里也指向一个安装目录。—with-native-system-header 指向包含具体系统文件的目录路径，默认为 /usr，该路径在 —with-sysroot 中。</li>
+<li>由于没有 libc，通过 —without-headers，—with-newlib，—disable-shared 可以在编译 all-gcc，all-target-libgcc 时避免引用 libc。 </li>
+</ul>
+<p><strong>安装 uclibc startfiles and headers</strong></p>
+<p>首先使用 make menuconfig 命令配置 uclibc，选中或填写以下信息，其他保持默认。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">Target Architecture</span><br><span class="line">    --&gt; x86_64</span><br><span class="line">Target Architecture Features and Options</span><br><span class="line">	--&gt; [*] Enable C99 Floating-point environment</span><br><span class="line">	--&gt; Linux kernel header location (/opt/cct/x86_64-linux-uclibc/include)</span><br><span class="line">General Library Settings</span><br><span class="line">	--&gt; [*] Dynamic linker stand-alone mode support</span><br><span class="line">	--&gt; Thread support (Native POSIX Threading(NPTL))</span><br><span class="line">	--&gt; [*] Enable SuSv3 LEGACY functions</span><br><span class="line">	--&gt; [*] Enable SuSv3 LEGACY macros</span><br><span class="line">	--&gt; [*] Enable SuSv4 or obsolescent functions</span><br><span class="line">	--&gt; [*] utmpx based support for tracking login/logouts to/from the system</span><br><span class="line">	--&gt; [*]   utmp support (XPG2 compat, SVr4 compat) </span><br><span class="line">Networking Support</span><br><span class="line">	--&gt; [*] IP version 6 support</span><br><span class="line">	--&gt; [*] DNS resolver functions</span><br><span class="line">	--&gt; [*] Provide libresolv stub </span><br><span class="line">String and Stdio Support</span><br><span class="line">	--&gt; [*] Wide Charater Support</span><br><span class="line">Libray Installation Options</span><br><span class="line">	--&gt; uClibc runtime library directory(/opt/cct/x86_64-linux-uclibc)</span><br><span class="line">	--&gt; uClibc development envirment directory(/opt/cct/x86_64-linux-uclibc)</span><br><span class="line">Development/debugging options</span><br><span class="line">	--&gt; Cross-compiling toolchain prefix (x86_64-linux-uclibc-)</span><br><span class="line">	--&gt; (-D__NR_setns -D__NR_syncfs) Extra CFLAGS</span><br></pre></td></tr></table></figure>
+<p>安装 startfiles 以及 headers</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CCT $ cd uClibc-ng-1.0.11</span><br><span class="line">uClibc-ng-1.0.11 $ make startfiles</span><br><span class="line">uClibc-ng-1.0.11 $ PREIFX=&quot;&quot; make install_startfiles</span><br><span class="line">uClibc-ng-1.0.11 $ PREIFX=&quot;&quot; make install_headers</span><br></pre></td></tr></table></figure>
+<p><strong>编译 libgcc</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CCT $ cd gcc-4.8.0/$TARGET</span><br><span class="line">x86_64-linux-uclibc $ make all-target-libgcc</span><br><span class="line">x86_64-linux-uclibc $ make install-target-libgcc</span><br></pre></td></tr></table></figure>
+<p><strong>编译 uclibc</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CCT $ cd uClibc-ng-1.0.11</span><br><span class="line">uClibc-ng-1.0.11 $ make</span><br><span class="line">uClibc-ng-1.0.11 $ PREIFX=&quot;&quot; make install</span><br></pre></td></tr></table></figure>
+<p><strong>完整编译 gcc</strong></p>
+<p>目前系统中存在一个基本的 gcc，这里需要关闭一些选项构建完成的 GCC，并编译所有目标。这里与 LFS 中第二次构建的不同在于，这里的第二次完整的 GCC 任然是运行于主机平台的而不是目标平台，所以依然是用 gcc-4.8 来编译，而不是用第一次编译好的那个基本的 gcc。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">CCT $ cd gcc-4.8.0/$TARGET</span><br><span class="line">x86_64-linux-uclibc $ CC=gcc-4.8 CXX=g++-4.8 ../configure \</span><br><span class="line">--prefix=$PREFIX \</span><br><span class="line">--with-sysroot=/ \</span><br><span class="line">--with-local-prefix=$PREFIX \</span><br><span class="line">--with-native-system-header-dir=$TARGET_PREFIX/include \</span><br><span class="line">--enable-languages=c,c++ \</span><br><span class="line">--enable-linker-build-id \</span><br><span class="line">--disable-multilib \</span><br><span class="line">--disable-werror \</span><br><span class="line">--disable-nls \</span><br><span class="line">--target=$TARGET</span><br><span class="line">x86_64-linux-uclibc $ make all</span><br><span class="line">x86_64-linux-uclibc $ make install</span><br></pre></td></tr></table></figure>
+<h2 id="4-测试"><a href="#4-测试" class="headerlink" title="4 测试"></a>4 测试</h2><p>测试代码 hello.c 的内容如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Hello\n&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译命令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ x86_64-linux-uclibc-gcc hello.c -o hello</span><br></pre></td></tr></table></figure>
+<p>在主机环境上无法运行：<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ./hello</span><br><span class="line">bash: ./hello: No such file or directory</span><br></pre></td></tr></table></figure><br>在目标环境上可以运行：<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ /opt/cct/x86_64-linux-uclibc/lib/ld64-uClibc-1.0.11.so --library-path /opt/cct/x86_64-linux-uclibc/lib:/opt/cct/x86_64-linux-uclibc/lib64 ./hello</span><br><span class="line">Hello</span><br><span class="line">$</span><br></pre></td></tr></table></figure></p>
+<h2 id="5-参考资料"><a href="#5-参考资料" class="headerlink" title="5 参考资料"></a>5 参考资料</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://gcc.gnu.org/install/configure.html">Installing GCC: Configuration</a></li>
+<li><a target="_blank" rel="noopener" href="https://linux.cn/lfs/LFS-BOOK-7.7-systemd/index.html">Linux From Scratch Version 7.7-systemd （简体中文版）</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/50645332/mips-gcc-cross-compiler-build-fails-cannot-find-lc">Stack Overflow | MIPS GCC cross-compiler build fails: “cannot find -lc”</a></li>
+</ol>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">1 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="toc-number">2.</span> <span class="toc-text">2 背景知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E7%BC%96%E8%AF%91%E5%99%A8"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 编译器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-GNU-%E7%BC%96%E8%AF%91%E5%99%A8"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 GNU 编译器</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%9E%84%E5%BB%BA%E8%BF%87%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">3 构建过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E8%AE%BE%E7%BD%AE%E6%9E%84%E5%BB%BA%E7%8E%AF%E5%A2%83%E4%BB%A5%E5%8F%8A%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 设置构建环境以及环境变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E9%85%8D%E7%BD%AE%EF%BC%8C%E7%BC%96%E8%AF%91%E5%92%8C%E5%AE%89%E8%A3%85"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 配置，编译和安装</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%B5%8B%E8%AF%95"><span class="toc-number">4.</span> <span class="toc-text">4 测试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="toc-number">5.</span> <span class="toc-text">5 参考资料</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&text=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&title=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&is_video=false&description=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=编译工具链制作-x86_64-linux-uclibc&body=Check out this article: https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&title=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&title=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&title=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&title=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&name=编译工具链制作-x86_64-linux-uclibc&description=&lt;p&gt;从源码构建交叉编译工具链－实践！&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/&t=编译工具链制作-x86_64-linux-uclibc"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2022
+    Deran Pan
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

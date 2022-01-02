@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="最近接触到 ffmpeg，由于ffmpeg 是Linux平台的开源工具但可以在多种平台编译。故想到之前有在Cygwin下编译NS2的经历， 因此Cygwin&#x2F;X下编译FFMpeg应该也是可以的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CygwinX安装与FFMpeg编译">
+<meta property="og:url" content="https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/index.html">
+<meta property="og:site_name" content="Deran Pan&#39;s Pages">
+<meta property="og:description" content="最近接触到 ffmpeg，由于ffmpeg 是Linux平台的开源工具但可以在多种平台编译。故想到之前有在Cygwin下编译NS2的经历， 因此Cygwin&#x2F;X下编译FFMpeg应该也是可以的。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/blg-008-1.jpg">
+<meta property="og:image" content="https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/blg-008-2.jpg">
+<meta property="og:image" content="https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/blg-008-3.jpg">
+<meta property="og:image" content="https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/blg-008-4.jpg">
+<meta property="og:image" content="https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/blg-008-5.jpg">
+<meta property="article:published_time" content="2017-04-16T07:14:33.000Z">
+<meta property="article:modified_time" content="2022-01-01T14:07:40.307Z">
+<meta property="article:author" content="Deran Pan">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/blg-008-1.jpg">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>CygwinX安装与FFMpeg编译</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2017/04/22/UVa-11809-Floating-Point-Numbers/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2017/04/11/Ubuntu%E4%B8%AD%E6%90%9C%E7%8B%97%E8%BE%93%E5%85%A5%E6%B3%95%E5%9C%A8WPS%E4%B8%AD%E6%97%A0%E6%B3%95%E9%94%AE%E5%85%A5%E4%B8%AD%E6%96%87/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&text=CygwinX安装与FFMpeg编译"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&title=CygwinX安装与FFMpeg编译"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&is_video=false&description=CygwinX安装与FFMpeg编译"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CygwinX安装与FFMpeg编译&body=Check out this article: https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&title=CygwinX安装与FFMpeg编译"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&title=CygwinX安装与FFMpeg编译"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&title=CygwinX安装与FFMpeg编译"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&title=CygwinX安装与FFMpeg编译"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&name=CygwinX安装与FFMpeg编译&description=&lt;p&gt;最近接触到 ffmpeg，由于ffmpeg 是Linux平台的开源工具但可以在多种平台编译。故想到之前有在Cygwin下编译NS2的经历， 因此Cygwin/X下编译FFMpeg应该也是可以的。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&t=CygwinX安装与FFMpeg编译"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85Cygwin-X"><span class="toc-number">1.</span> <span class="toc-text">1. 安装Cygwin&#x2F;X</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 安装依赖包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E8%BF%90%E8%A1%8CGedit%EF%BC%88Cygwin-X%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 运行Gedit（Cygwin&#x2F;X）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-1-%E5%90%AF%E5%8A%A8-multiwindow-mode%E6%96%B9%E6%B3%95%E4%B8%80"><span class="toc-number">1.2.1.</span> <span class="toc-text">1.2.1 启动 multiwindow mode方法一</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-2-%E5%90%AF%E5%8A%A8multiwindow-mode%E6%96%B9%E6%B3%95%E4%BA%8C"><span class="toc-number">1.2.2.</span> <span class="toc-text">1.2.2 启动multiwindow mode方法二</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-3-%E5%90%AF%E5%8A%A8windowed-mode"><span class="toc-number">1.2.3.</span> <span class="toc-text">1.2.3 启动windowed mode</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%BC%96%E8%AF%91FFMpeg"><span class="toc-number">2.</span> <span class="toc-text">2. 编译FFMpeg</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E8%A7%A3%E5%8E%8B"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 解压</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E7%BC%96%E8%AF%91"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E4%BD%BF%E7%94%A8ffplay%E6%92%AD%E6%94%BE%E8%A7%86%E9%A2%91"><span class="toc-number">2.3.</span> <span class="toc-text">3.3 使用ffplay播放视频</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        CygwinX安装与FFMpeg编译
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deran Pan</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-04-16T07:14:33.000Z" itemprop="datePublished">2017-04-16</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E4%B8%8E%E7%BC%96%E8%AF%91/">软件安装与编译</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>最近接触到 ffmpeg，由于ffmpeg 是Linux平台的开源工具但可以在多种平台编译。故想到之前有在Cygwin下编译NS2的经历， 因此Cygwin/X下编译FFMpeg应该也是可以的。</p>
+<span id="more"></span>
+<h2 id="1-安装Cygwin-X"><a href="#1-安装Cygwin-X" class="headerlink" title="1. 安装Cygwin/X"></a>1. 安装Cygwin/X</h2><p>之前在编译NS2按照教程一步一步编译，自己也完全没有多少思考，全当完成任务。因此完全没有Cygwin/X的概念。直到这次刚开始编译出 ffplay 时无法播放视频的才意识到要运行窗口程序是需要Cygwin/X的。</p>
+<h3 id="1-1-安装依赖包"><a href="#1-1-安装依赖包" class="headerlink" title="1.1 安装依赖包"></a>1.1 安装依赖包</h3><p>安装Cygwin/X需要安装以下几个依赖包。</p>
+<ul>
+<li>xorg-server(必须，Cygwin/X X Server)</li>
+<li>xinit （必须，包含一些启动X Server的脚本，xinit， startx， startxwin和开始菜单的快捷方式等）</li>
+<li>xorg-docs（可选，文档）</li>
+<li>xlaunch（可选，一个运行X Sessions的向导程序）</li>
+<li>gnome-flashback（可选，X Server运行于Windowed Mode的一个桌面环境，还有其他可选）</li>
+<li>gedit（可选，作为一个测试程序）</li>
+</ul>
+<p>安装好之后可以发现在开始菜单出现XLaunch，XWin Server等。如下图所示</p>
+<img src="/2017/04/16/install_cygwinX_and_compile_ffmpeg/blg-008-1.jpg" class="" alt="figure1">
+<h3 id="1-2-运行Gedit（Cygwin-X）"><a href="#1-2-运行Gedit（Cygwin-X）" class="headerlink" title="1.2 运行Gedit（Cygwin/X）"></a>1.2 运行Gedit（Cygwin/X）</h3><h4 id="1-2-1-启动-multiwindow-mode方法一"><a href="#1-2-1-启动-multiwindow-mode方法一" class="headerlink" title="1.2.1 启动 multiwindow mode方法一"></a>1.2.1 启动 multiwindow mode方法一</h4><p>直接开始菜单运行XWin Server，可以在托盘处看到如下图标，右键绿色的那个图标，选择gedit Text Editor程序。</p>
+<img src="/2017/04/16/install_cygwinX_and_compile_ffmpeg/blg-008-2.jpg" class="" alt="figure2">
+<h4 id="1-2-2-启动multiwindow-mode方法二"><a href="#1-2-2-启动multiwindow-mode方法二" class="headerlink" title="1.2.2 启动multiwindow mode方法二"></a>1.2.2 启动multiwindow mode方法二</h4><p>在Cygwin的终端中输入以下命令（要先启动X Server即上图托盘处红色的图标），从而启动gedit</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ export DISPLAY=:0.0</span><br><span class="line">$ gedit</span><br></pre></td></tr></table></figure>
+<img src="/2017/04/16/install_cygwinX_and_compile_ffmpeg/blg-008-3.jpg" class="" alt="figure3">
+<h4 id="1-2-3-启动windowed-mode"><a href="#1-2-3-启动windowed-mode" class="headerlink" title="1.2.3 启动windowed mode"></a>1.2.3 启动windowed mode</h4><p>在开始菜单中直接运行GNOME Flashback，启动后如下图所示</p>
+<img src="/2017/04/16/install_cygwinX_and_compile_ffmpeg/blg-008-4.jpg" class="" alt="Figure4">
+<p>这些只是一点点的基本使用方法，更多的说明还请参考<a target="_blank" rel="noopener" href="https://x.cygwin.com/docs/ug/cygwin-x-ug.html">Cygwin/X User’s Guide</a>。</p>
+<h2 id="2-编译FFMpeg"><a href="#2-编译FFMpeg" class="headerlink" title="2. 编译FFMpeg"></a>2. 编译FFMpeg</h2><p>如果要编译出ffplay，需要增加依赖libSDL2-devel安装包。可以通过Cygwin的安装程序安装。</p>
+<h3 id="2-1-解压"><a href="#2-1-解压" class="headerlink" title="2.1 解压"></a>2.1 解压</h3><p>首先从官网下载最新的ffmpeg源码包，本文编译的版本为<a target="_blank" rel="noopener" href="http://ffmpeg.org/releases/ffmpeg-3.2.4.tar.xz">ffmpeg-3.2.4.tar.bz2</a>。</p>
+<h3 id="2-2-编译"><a href="#2-2-编译" class="headerlink" title="2.2 编译"></a>2.2 编译</h3><p>命令顺序如下：（configure和make的时间较长，耐心等待）</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> tar -jxf ffmpeg-3.2.4.tar.bz2</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> ffmpeg-3.2.4</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./configure --disable-debug --disable-yasm --enable-shared</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> make</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> make install</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-3-使用ffplay播放视频"><a href="#3-3-使用ffplay播放视频" class="headerlink" title="3.3 使用ffplay播放视频"></a>3.3 使用ffplay播放视频</h3><p>别忘要先启动X Server和设置DISPLAY环境变量。</p>
+<img src="/2017/04/16/install_cygwinX_and_compile_ffmpeg/blg-008-5.jpg" class="" alt="figure5">
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85Cygwin-X"><span class="toc-number">1.</span> <span class="toc-text">1. 安装Cygwin&#x2F;X</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%AE%89%E8%A3%85%E4%BE%9D%E8%B5%96%E5%8C%85"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 安装依赖包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E8%BF%90%E8%A1%8CGedit%EF%BC%88Cygwin-X%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 运行Gedit（Cygwin&#x2F;X）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-1-%E5%90%AF%E5%8A%A8-multiwindow-mode%E6%96%B9%E6%B3%95%E4%B8%80"><span class="toc-number">1.2.1.</span> <span class="toc-text">1.2.1 启动 multiwindow mode方法一</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-2-%E5%90%AF%E5%8A%A8multiwindow-mode%E6%96%B9%E6%B3%95%E4%BA%8C"><span class="toc-number">1.2.2.</span> <span class="toc-text">1.2.2 启动multiwindow mode方法二</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-3-%E5%90%AF%E5%8A%A8windowed-mode"><span class="toc-number">1.2.3.</span> <span class="toc-text">1.2.3 启动windowed mode</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%BC%96%E8%AF%91FFMpeg"><span class="toc-number">2.</span> <span class="toc-text">2. 编译FFMpeg</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E8%A7%A3%E5%8E%8B"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 解压</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E7%BC%96%E8%AF%91"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E4%BD%BF%E7%94%A8ffplay%E6%92%AD%E6%94%BE%E8%A7%86%E9%A2%91"><span class="toc-number">2.3.</span> <span class="toc-text">3.3 使用ffplay播放视频</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&text=CygwinX安装与FFMpeg编译"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&title=CygwinX安装与FFMpeg编译"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&is_video=false&description=CygwinX安装与FFMpeg编译"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=CygwinX安装与FFMpeg编译&body=Check out this article: https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&title=CygwinX安装与FFMpeg编译"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&title=CygwinX安装与FFMpeg编译"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&title=CygwinX安装与FFMpeg编译"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&title=CygwinX安装与FFMpeg编译"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&name=CygwinX安装与FFMpeg编译&description=&lt;p&gt;最近接触到 ffmpeg，由于ffmpeg 是Linux平台的开源工具但可以在多种平台编译。故想到之前有在Cygwin下编译NS2的经历， 因此Cygwin/X下编译FFMpeg应该也是可以的。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2017/04/16/install_cygwinX_and_compile_ffmpeg/&t=CygwinX安装与FFMpeg编译"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2022
+    Deran Pan
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

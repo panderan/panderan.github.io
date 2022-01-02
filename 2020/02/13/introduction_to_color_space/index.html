@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="博文首先对人眼的颜色感知方式进行了简要的说明，叙述了人眼感知颜色的方式。接着对 RGB 色彩显示的方法进行了说明，类似于人眼的三种视锥细胞，RGB色彩通过使用三种基本色混合来产生其他颜色。最终引出 CIE XYZ 颜色坐标空间，，并进行了简要介绍。该空间提供了其他颜色空间相互转换的能力，以及可以对不同颜色空间进行对比。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="颜色在计算机中的表示方法">
+<meta property="og:url" content="https://panderan.github.io/2020/02/13/introduction_to_color_space/index.html">
+<meta property="og:site_name" content="Deran Pan&#39;s Pages">
+<meta property="og:description" content="博文首先对人眼的颜色感知方式进行了简要的说明，叙述了人眼感知颜色的方式。接着对 RGB 色彩显示的方法进行了说明，类似于人眼的三种视锥细胞，RGB色彩通过使用三种基本色混合来产生其他颜色。最终引出 CIE XYZ 颜色坐标空间，，并进行了简要介绍。该空间提供了其他颜色空间相互转换的能力，以及可以对不同颜色空间进行对比。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://panderan.github.io/2020/02/13/introduction_to_color_space/Fig1.jpg">
+<meta property="og:image" content="https://panderan.github.io/2020/02/13/introduction_to_color_space/Fig2.jpg">
+<meta property="og:image" content="https://panderan.github.io/2020/02/13/introduction_to_color_space/Fig3.jpg">
+<meta property="og:image" content="https://panderan.github.io/2020/02/13/introduction_to_color_space/Fig4.jpg">
+<meta property="og:image" content="https://panderan.github.io/2020/02/13/introduction_to_color_space/Fig5.jpg">
+<meta property="og:image" content="https://panderan.github.io/2020/02/13/introduction_to_color_space/Fig6.gif">
+<meta property="og:image" content="https://panderan.github.io/2020/02/13/introduction_to_color_space/Fig7.jpg">
+<meta property="og:image" content="https://panderan.github.io/2020/02/13/introduction_to_color_space/Fig8.png">
+<meta property="og:image" content="https://panderan.github.io/2020/02/13/introduction_to_color_space/Fig9.jpg">
+<meta property="og:image" content="https://panderan.github.io/2020/02/13/introduction_to_color_space/Fig10.jpg">
+<meta property="article:published_time" content="2020-02-13T11:13:26.000Z">
+<meta property="article:modified_time" content="2022-01-02T16:34:24.258Z">
+<meta property="article:author" content="Deran Pan">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://panderan.github.io/2020/02/13/introduction_to_color_space/Fig1.jpg">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>颜色在计算机中的表示方法</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2019/10/06/build_the_cross_compiler_of_x86-64-linux-uclibc/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2020/02/13/introduction_to_color_space/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&text=颜色在计算机中的表示方法"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&title=颜色在计算机中的表示方法"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&is_video=false&description=颜色在计算机中的表示方法"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=颜色在计算机中的表示方法&body=Check out this article: https://panderan.github.io/2020/02/13/introduction_to_color_space/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&title=颜色在计算机中的表示方法"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&title=颜色在计算机中的表示方法"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&title=颜色在计算机中的表示方法"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&title=颜色在计算机中的表示方法"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&name=颜色在计算机中的表示方法&description=&lt;p&gt;博文首先对人眼的颜色感知方式进行了简要的说明，叙述了人眼感知颜色的方式。接着对 RGB 色彩显示的方法进行了说明，类似于人眼的三种视锥细胞，RGB色彩通过使用三种基本色混合来产生其他颜色。最终引出 CIE XYZ 颜色坐标空间，，并进行了简要介绍。该空间提供了其他颜色空间相互转换的能力，以及可以对不同颜色空间进行对比。&lt;/p&gt;"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2020/02/13/introduction_to_color_space/&t=颜色在计算机中的表示方法"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BA%BA%E7%9C%BC%E5%A6%82%E4%BD%95%E6%84%9F%E7%9F%A5%E9%A2%9C%E8%89%B2"><span class="toc-number">1.</span> <span class="toc-text">1. 人眼如何感知颜色</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-RGB-%E9%A2%9C%E8%89%B2%E6%A0%BC%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">2. RGB 颜色格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-CIE-XYZ-%E9%A2%9C%E8%89%B2%E6%A0%BC%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text">3. CIE XYZ 颜色格式</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        颜色在计算机中的表示方法
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Deran Pan</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-02-13T11:13:26.000Z" itemprop="datePublished">2020-02-13</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <p>博文首先对人眼的颜色感知方式进行了简要的说明，叙述了人眼感知颜色的方式。接着对 RGB 色彩显示的方法进行了说明，类似于人眼的三种视锥细胞，RGB色彩通过使用三种基本色混合来产生其他颜色。最终引出 CIE XYZ 颜色坐标空间，，并进行了简要介绍。该空间提供了其他颜色空间相互转换的能力，以及可以对不同颜色空间进行对比。</p>
+<span id="more"></span>
+<h2 id="1-人眼如何感知颜色"><a href="#1-人眼如何感知颜色" class="headerlink" title="1. 人眼如何感知颜色"></a>1. 人眼如何感知颜色</h2><p>人们生活在五彩斑斓的世界中，蓝天白云，碧水青山。这些不同的颜色被人眼所接收，然后被大脑以一种尚未可知的方式处理后，使得我们能够感知到大自然的美景风光。光线是我们能够看见颜色的介质，而光线的本质是电磁波，电磁波按照频率可分为不同的种类，其中可以被人眼所感知到的频率范围只是其中的很小一段，波长在380 nm 至 750 nm 之间。</p>
+<img src="/2020/02/13/introduction_to_color_space/Fig1.jpg" class="" alt="电磁波频率">
+<p>单色光在自然界中很少存在，虽然人类可以通过激光来获得。我们常见的，太阳发出的光则是一种混合光，通过棱镜的色散实验可以把太阳光分解。太阳光照射在不同的物体上一部分波长的光波会被吸收，另一部分会被反射，而映入人们眼帘的，经由物体反射光波的波长则决定了人们所看见的颜色。一片菠菜叶子反射太阳光的光谱分布图如下，可以看到波长在可见范围内主要反射的波长为 550 nm左右，而波长为 550 nm 的光波在人眼看来是绿色的，也因此菠菜叶是绿色的。</p>
+<img src="/2020/02/13/introduction_to_color_space/Fig2.jpg" class="" alt="菠菜叶频谱分布">
+<p>人的眼中有 3 中视锥细胞来分别感受不同颜色，每种细胞对某种波长的光线最为敏感，并且敏感度向波长两遍递减。第一种对波长约为 560 nm 最为敏感， 有时将这种类型视锥细胞称为L 。 第二种类型对波长为 530 nm 最为敏感，有时简称为 M。 第三种类型对波长为 420 nm 最为敏感，有时简称为 S，三种细胞对不同波长光线的敏感度如下图所示。</p>
+<img src="/2020/02/13/introduction_to_color_space/Fig3.jpg" class="" alt="视锥细胞敏感度">
+<p>一种混合光线（一种频谱分布）进入人们的眼睛时，会同时刺激这三种不同类型的视锥细胞，每种细胞产生不同的刺激。大脑将会根据这三种不同刺激的程度呈现出不同的颜色。而人眼这种感知颜色的方式是有损的，它将多种波长的光分解为三种刺激，因此，就有可能不同频谱分布的混合光线在人眼中呈现出同一种颜色，人眼所看的颜色则不能推出该颜色光线的实际频谱分布，因为它有多种可能。这种现象称为异色现象，它对色彩的重现有着巨大的影响。这也意味着我们不需要对原始光线进行模拟就能重现出它的颜色，只需要对人眼的三种视锥细胞产生相同的刺激即可。</p>
+<p>在人眼中初了视锥细胞之外，还有一种视觉细胞叫视杆细胞，视杆细胞不能产生色觉，但他对光线的明亮与否格外敏感。视杆细胞对可见光的敏感程度分布图如下。可见，视杆细胞对 500 nm 波长光波最为敏感，即对于相同亮度不同颜色的光线，人们会觉得绿色更为明亮些。</p>
+<img src="/2020/02/13/introduction_to_color_space/Fig4.jpg" class="" alt="视杆细胞敏感图">
+<h2 id="2-RGB-颜色格式"><a href="#2-RGB-颜色格式" class="headerlink" title="2. RGB 颜色格式"></a>2. RGB 颜色格式</h2><p>当今，RGB 颜色格式广泛应用于计算机领域，如 LCD 显示器。RGB 颜色格式与人眼的三种视锥细胞相似，RGB 颜色格式规定了三种基本颜色，这三种颜色中的任意一种不能由其他两种颜色混合而成，其他任意颜色则由这三种基本颜色不同比例混合而成。在CIE 1931 标准中规定了这三种基本颜色的波长为 700 nm（红），546.1 nm（绿）、435.8 nm（蓝）。</p>
+<p>对波长为 610 nm （橙黄）的光用 RGB 颜色格式表示如下图所示。r(λ)、g(λ)、b(λ) 分别为模拟波长为 λ 的光线时所需要的基本颜色光亮度。当 λ = 610 时，r(λ)=0.34765、g(λ)=0.04776、b(λ)=-0.00038。</p>
+<img src="/2020/02/13/introduction_to_color_space/Fig5.jpg" class="" alt="aaa">
+<p>注意到 b(λ) 为负值，而亮度为负的光线是不存在的，因此在模拟波长为 610 nm 的光颜色时，仅仅是把蓝色基本光的亮度置为 0。所以，模拟出的橙黄色与610 nm 的单色光的颜色并不一致，但是非常接近。另一方面也说明 RGB 颜色格式无法表示所有的颜色，其所能表示的颜色是有限的。</p>
+<p>r(λ)、g(λ)、b(λ) 的值为三色激励值，但是这种以光亮度表示的三色激励值的混合结果难以想象与可视化。一种简单的可视化方式是省略掉亮度信息（亮红与暗红相同）。这种表示方法即为将三色激励值 r(λ)、g(λ)、b(λ) 转换为色度坐标 r、g、b，计算方法如下。</p>
+<script type="math/tex; mode=display">
+r=\frac{r(\lambda)}{r(\lambda)+g(\lambda)+b(\lambda)}</script><script type="math/tex; mode=display">
+g=\frac{g(\lambda)}{r(\lambda)+g(\lambda)+b(\lambda)}</script><script type="math/tex; mode=display">
+b=\frac{b(\lambda)}{r(\lambda)+g(\lambda)+b(\lambda)}</script><p>转换为色度坐标后，每一种颜色的可见光（λ不同）都可以得到一个色度坐标 (r, g, b)，并且 r + g + b = 1，由此可以看出，任意给出 r、g、b 中两个值，就可以得到另外一个值。在三维坐标空间中通过 r，g，b 可以绘制出一条光谱颜色曲线如蓝色所示。省略一个维度并不会丢失信息，令 b = 0，将其投影到 rg 平面后如品红色曲线所示。</p>
+<img src="/2020/02/13/introduction_to_color_space/Fig6.gif" class="" alt="色度曲线">
+<p>在 rg 平面的投影图如下所示：</p>
+<img src="/2020/02/13/introduction_to_color_space/Fig7.jpg" class="" alt="投影">
+<p>在上图中：</p>
+<ul>
+<li>所有位于曲线上的点的颜色均为光谱颜色；</li>
+<li>所有位于曲线内部的点均为非光谱颜色；</li>
+<li>所有位于曲线外部的点无意义，所表示的颜色在现实中也不存在；</li>
+<li>所有在曲线内三种基本颜色点所构成的三角形内的点，均可以被这三种基本颜色创建；</li>
+<li>所有在曲线内不在三种基本颜色点所构成的三角形内的点是合理色度颜色，但需要其他的三种基本颜色来创建；</li>
+</ul>
+<h2 id="3-CIE-XYZ-颜色格式"><a href="#3-CIE-XYZ-颜色格式" class="headerlink" title="3. CIE XYZ 颜色格式"></a>3. CIE XYZ 颜色格式</h2><p>选择不同的三种基本颜色，可以获得不同的可显示色彩范围。但由此也带来一个问题，如何准确的告诉别人一个颜色？不仅要包含三种基本色的信息还需要三种基本色的比例。但是，如果对方的显示器使用的是不同的三种基本色，那么对方的显示器则无法准确的显示出该种颜色。因为，缺少一种从一个RGB色度坐标转换到另一种RGB色度坐标的方法。</p>
+<p>CIE XYZ 颜色格式则提供了这种转换。CIE XYZ 是设备无关的，包含了所有颜色的颜色空间。由于 CIE XYZ 需要包含所有光谱色度和非光谱色度，它所选的三种基本色中将包含光谱曲线之外的点。因此，CIE XYZ 颜色并不能应用于实际，它提供一种比较多种色度空间和在这些空间中进行颜色转换的能力。</p>
+<img src="/2020/02/13/introduction_to_color_space/Fig8.png" class="">
+<p>图中黑色圆点、三角、方框即为 CIE XYZ 的三种基本色，均是现实世界中不存在的、无意义的颜色点，其所构成的三角形包含了所有的光谱颜色和非光谱颜色。将 CIE XYZ 颜色格式的三种基本色的所构成的三角形，从 rg 平面中的狭长的三角形状转换为 xy 平面中的腰长为 1 的等腰直角三角形。通过这种转换，将使得 X、Y、Z 三种基本光的比例均为非负值。在 xyz 空间中，对光谱颜色进行模拟的比例函数图如下。</p>
+<img src="/2020/02/13/introduction_to_color_space/Fig9.jpg" class="">
+<p>多种不同色域的显示色彩范围在 CIE XYZ 中的比较如下。</p>
+<img src="/2020/02/13/introduction_to_color_space/Fig10.jpg" class="">
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">首页</a></li>
+         
+          <li><a href="/about/">关于</a></li>
+         
+          <li><a href="/archives/">归档</a></li>
+         
+          <li><a href="/projects_url">项目</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BA%BA%E7%9C%BC%E5%A6%82%E4%BD%95%E6%84%9F%E7%9F%A5%E9%A2%9C%E8%89%B2"><span class="toc-number">1.</span> <span class="toc-text">1. 人眼如何感知颜色</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-RGB-%E9%A2%9C%E8%89%B2%E6%A0%BC%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">2. RGB 颜色格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-CIE-XYZ-%E9%A2%9C%E8%89%B2%E6%A0%BC%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text">3. CIE XYZ 颜色格式</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://panderan.github.io/2020/02/13/introduction_to_color_space/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&text=颜色在计算机中的表示方法"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&title=颜色在计算机中的表示方法"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&is_video=false&description=颜色在计算机中的表示方法"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=颜色在计算机中的表示方法&body=Check out this article: https://panderan.github.io/2020/02/13/introduction_to_color_space/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&title=颜色在计算机中的表示方法"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&title=颜色在计算机中的表示方法"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&title=颜色在计算机中的表示方法"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&title=颜色在计算机中的表示方法"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://panderan.github.io/2020/02/13/introduction_to_color_space/&name=颜色在计算机中的表示方法&description=&lt;p&gt;博文首先对人眼的颜色感知方式进行了简要的说明，叙述了人眼感知颜色的方式。接着对 RGB 色彩显示的方法进行了说明，类似于人眼的三种视锥细胞，RGB色彩通过使用三种基本色混合来产生其他颜色。最终引出 CIE XYZ 颜色坐标空间，，并进行了简要介绍。该空间提供了其他颜色空间相互转换的能力，以及可以对不同颜色空间进行对比。&lt;/p&gt;"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://panderan.github.io/2020/02/13/introduction_to_color_space/&t=颜色在计算机中的表示方法"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2017-2022
+    Deran Pan
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a href="/projects_url">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
